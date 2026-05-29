@@ -2,128 +2,159 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  // 1. API로 받아올 데이터를 저장할 상태(State) 선언
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 2. 사용자가 선택할 필터 상태
-  const [selectedCountry, setSelectedCountry] = useState('KR'); // KR, US, JP
+  // 모달창 열림/닫힘 및 선택된 기사 관리 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  
+  // 모달 내부 외신 원문 아코디언 접고 펴는 상태
+  const [showOriginal, setShowOriginal] = useState(false);
+
+  const [selectedCountry, setSelectedCountry] = useState('KR');
   const [selectedCategory, setSelectedCategory] = useState('전체');
 
-  // 3. 백엔드 세션 최신 기사 API 호출 함수
   const fetchLatestArticles = async () => {
     try {
       setLoading(true);
-      
-      // 노션에 기재된 [앱 하단 탭 네비게이션 - 홈] 연결 API 엔드포인트
       const response = await fetch('/api/v1/sessions/latest/articles');
-      
-      if (!response.ok) {
-        throw new Error('최신 뉴스 데이터를 가져오는데 실패했습니다.');
-      }
-      
+      if (!response.ok) throw new Error('데이터 로드 실패');
       const data = await response.json();
-      setArticles(data); // 백엔드가 준 JSON 배열을 상태에 주입
+      setArticles(data);
     } catch (err) {
-      setError(err.message);
+      // 서버 연동 전 화면 확인을 위한 더미 데이터 주입
+      setArticles([
+        {
+          id: 1,
+          category: '기술·IT',
+          media: 'TechCrunch',
+          rank: 1,
+          title: '오픈AI, 차세대 추론 모델 gpt-5 대규모 업데이트 발표',
+          bullets: [
+            '기존 모델 대비 복잡한 수학 및 코딩 추론 능력이 45% 향상되었습니다.',
+            '아시아권 언어 최적화를 통해 한국어 텍스트 처리 속도가 2배 빨라졌습니다.',
+            '내달 초 개발자 API를 시작으로 글로벌 전역에 순차 배포될 예정입니다.'
+          ],
+          content_translated: '오픈AI가 오늘 인공지능 역사에 새로운 획을 그을 차세대 거대언어모델(LLM)인 gpt-5의 세부 명세를 전격 공개했습니다. 이번 모델은 단순 문장 생성을 넘어 인간 수준의 복잡한 추론 로직을 수행할 수 있도록 설계된 것이 가장 큰 특징입니다...',
+          content_original: 'OpenAI today officially unveiled the detailed specifications of its next-generation large language model, gpt-5, marking a significant milestone in AI history. The defining characteristic of this model is its capability to execute complex reasoning logics...',
+          comment_count: 14
+        }
+      ]);
+      setError(null); 
     } finally {
       setLoading(false);
     }
   };
 
-  // 4. 컴포넌트가 처음 켜질 때 자동으로 API 호출 실행
   useEffect(() => {
     fetchLatestArticles();
   }, []);
 
+  const openArticleDetail = (article) => {
+    setSelectedArticle(article);
+    setIsModalOpen(true);
+    setShowOriginal(false); // 모달 열릴 때 아코디언은 항상 닫힌 상태로 시작
+  };
+
   return (
     <div className="mobile-container">
-      {/* 상단 헤더 바 */}
       <header className="header">
         <button className="menu-btn">☰</button>
         <h1 className="logo">뉴스브리프</h1>
         <button className="alert-btn">🔔<span className="badge">3</span></button>
       </header>
 
-      {/* 국가 선택 탭 (피그마 상단 UI 디자인 적용) */}
       <div className="country-tabs">
         <button className={selectedCountry === 'KR' ? 'active' : ''} onClick={() => setSelectedCountry('KR')}>🇰🇷 한국</button>
         <button className={selectedCountry === 'US' ? 'active' : ''} onClick={() => setSelectedCountry('US')}>🇺🇸 미국</button>
         <button className={selectedCountry === 'JP' ? 'active' : ''} onClick={() => setSelectedCountry('JP')}>🇯🇵 일본</button>
       </div>
 
-      {/* 크롤링 상태 표시 바 */}
       <div className="status-bar">
         🟢 크롤 완료 · 다음 세션까지 <span>대기 중</span>
       </div>
 
-      {/* 메인 브리핑 영역 */}
       <main className="content">
         <h2 className="section-title">오늘의 브리핑</h2>
         
-        {/* 카테고리 가로 스크롤 메뉴 */}
         <div className="category-scroll">
           {['전체', '정치', '경제', '사회', '기술·IT', '스포츠'].map((cat) => (
-            <button 
-              key={cat} 
-              className={selectedCategory === cat ? 'cat-active' : ''}
-              onClick={() => setSelectedCategory(cat)}
-            >
-              {cat}
-            </button>
+            <button key={cat} className={selectedCategory === cat ? 'cat-active' : ''} onClick={() => setSelectedCategory(cat)}>{cat}</button>
           ))}
         </div>
 
-        {/* 세션 타임라인 영역 */}
-        <div className="session-timeline">
-          <div className="timeline-title">최신 세션 타임라인 <span>스와이프 →</span></div>
-          <div className="time-chips">
-            <button className="time-chip">이전 세션</button>
-            <button className="time-chip active-time">최신 세션</button>
-          </div>
+        <div className="news-list">
+          {articles.map((article) => (
+            <div key={article.id} className="news-card click-effect" onClick={() => openArticleDetail(article)}>
+              <div className="card-meta">
+                <span className="badge-tag">{article.category}</span>
+                <span className="media-name">{article.media} · {article.rank}위</span>
+              </div>
+              <h3 className="news-title">{article.title}</h3>
+              <ul className="news-bullets">
+                {article.bullets.map((bullet, idx) => <li key={idx}>{bullet}</li>)}
+              </ul>
+              <div className="card-footer">
+                <button className="action-btn">📄 원문 보기</button>
+                <button className="action-btn">💬 {article.comment_count}</button>
+                <button className="bookmark-btn" onClick={(e) => e.stopPropagation()}>🔖</button>
+              </div>
+            </div>
+          ))}
         </div>
-
-        {/* 5. API 데이터 렌더링 및 예외 처리 조건문 */}
-        {loading && <div className="loading-view">🔄 최신 브리핑을 생성하고 있습니다...</div>}
-        {error && <div className="error-view">⚠️ {error} (백엔드 서버 연동 전입니다)</div>}
-        
-        {!loading && !error && (
-          <div className="news-list">
-            {articles.length === 0 ? (
-              <div className="empty-view">조회된 뉴스 기사가 없습니다.</div>
-            ) : (
-              articles.map((article) => (
-                <div key={article.id} className="news-card">
-                  <div className="card-meta">
-                    <span className="badge-tag">{article.category || '기술·IT'}</span>
-                    <span className="media-name">{article.media || '언론사'} · {article.rank || 1}위</span>
-                  </div>
-                  <h3 className="news-title">{article.title || '기사 제목이 표시되는 영역입니다.'}</h3>
-                  
-                  {/* 백엔드 gpt-4o-mini가 요약해 준 3줄 요약 배열 출력단 */}
-                  <ul className="news-bullets">
-                    {article.bullets && article.bullets.map((bullet, idx) => (
-                      <li key={idx}>{bullet}</li>
-                    ))}
-                    {!article.bullets && <li>AI 요약 핵심 내용을 불러오는 중입니다.</li>}
-                  </ul>
-                  
-                  <div className="card-footer">
-                    <button className="action-btn">📄 원문</button>
-                    <button className="action-btn">💬 {article.comment_count || 0}</button>
-                    <button className="bookmark-btn">🔖</button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-
-        <button className="more-btn">기사 더보기 ↓</button>
       </main>
 
-      {/* 앱 하단 고정 네비게이션 바 (피그마 최하단 매핑) */}
+      {/* 기사 상세 보기 모달 창 UI */}
+      {isModalOpen && selectedArticle && (
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <header className="modal-header">
+              <span className="modal-meta">{selectedArticle.media} · {selectedArticle.category}</span>
+              <button className="close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
+            </header>
+
+            <div className="modal-scroll-area">
+              <h2 className="modal-title">{selectedArticle.title}</h2>
+
+              {/* AI 핵심 3줄 요약 하이라이트 박스 */}
+              <div className="ai-summary-box">
+                <div className="ai-badge">✨ AI 핵심 3줄 요약</div>
+                <ul className="ai-bullets">
+                  {selectedArticle.bullets.map((bullet, idx) => (
+                    <li key={idx}>{bullet}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* 번역된 한국어 본문 */}
+              <div className="article-body">
+                <h4 className="body-sub-title">🇰🇷 한국어 번역 본문</h4>
+                <p className="body-text">{selectedArticle.content_translated}</p>
+              </div>
+
+              {/* 외신 원문 아코디언 */}
+              <div className="accordion-section">
+                <button className="accordion-trigger" onClick={() => setShowOriginal(!showOriginal)}>
+                  {showOriginal ? '🔼 외신 원문 접기' : '🔽 외신 원문 보기 (English / 日本語)'}
+                </button>
+                {showOriginal && (
+                  <div className="accordion-content">
+                    <p className="body-text original-text">{selectedArticle.content_original}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <footer className="modal-footer">
+              <button className="modal-action-btn">💬 댓글 {selectedArticle.comment_count}개 전체보기</button>
+              <button className="modal-bookmark-btn">🔖 스크랩하기</button>
+            </footer>
+          </div>
+        </div>
+      )}
+
       <nav className="bottom-nav">
         <button className="nav-item active-nav">🏠<br/>홈</button>
         <button className="nav-item">🗂️<br/>스크랩</button>

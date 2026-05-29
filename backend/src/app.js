@@ -10,4 +10,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+const authRouter = require('./routes/auth');
+app.use('/api/auth', authRouter);
+
 module.exports = app;

@@ -3,17 +3,15 @@ const router = express.Router();
 const pool = require('../db/index');
 const bcrypt = require('bcrypt');
 
-// POST /api/auth/signup  ← 회원가입 API
+// 회원가입만!
 router.post('/signup', async (req, res) => {
-  const { email, password, username } = req.body;
+  const { name, email, password } = req.body;
 
-  // 1. 입력값 검증
-  if (!email || !password || !username) {
+  if (!name || !email || !password) {
     return res.status(400).json({ message: '모든 항목을 입력해주세요.' });
   }
 
   try {
-    // 2. 이미 가입된 이메일인지 확인
     const existingUser = await pool.query(
       'SELECT * FROM users WHERE email = $1',
       [email]
@@ -23,13 +21,13 @@ router.post('/signup', async (req, res) => {
       return res.status(409).json({ message: '이미 사용 중인 이메일입니다.' });
     }
 
-    // 3. 비밀번호 암호화
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4. DB에 저장
     const newUser = await pool.query(
-      'INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING id, email, username',
-      [email, hashedPassword, username]
+      `INSERT INTO users (name, email, password, provider)
+       VALUES ($1, $2, $3, 'local')
+       RETURNING id, name, email, created_at`,
+      [name, email, hashedPassword]
     );
 
     res.status(201).json({
@@ -44,3 +42,4 @@ router.post('/signup', async (req, res) => {
 });
 
 module.exports = router;
+

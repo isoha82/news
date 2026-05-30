@@ -1,232 +1,217 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  // ----------------------------------------------------
-  // [신규 추가] 현재 어떤 탭(화면)을 보여줄지 결정하는 스위치
-  // 'home' = 메인 뉴스 브리핑, 'scrap' = 내 스크랩북
-  // ----------------------------------------------------
-  const [currentTab, setCurrentTab] = useState('home');
+  // 'onboarding' (STEP 1), 'step2', 'step3', 'step4', 'home' 등으로 화면 제어
+  const [view, setView] = useState('onboarding'); 
 
-  const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // --- [상태 관리] 국가 선택 ---
+  const [selectedCountries, setSelectedCountries] = useState({
+    kr: true,
+    us: true,
+    jp: false,
+  });
 
-  // 모달창 열림/닫힘 및 선택된 기사 관리 상태  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState(null);
-  
-  // 모달 내부 외신 원문 아코디언 접고 펴는 상태
-  const [showOriginal, setShowOriginal] = useState(false);
+  // --- [상태 관리] 카테고리 선택 ---
+  const [selectedCategories, setSelectedCategories] = useState({
+    it: true,
+    economy: true,
+    politics: false,
+    society: false,
+    sports: false,
+    entertainment: false,
+  });
 
-  const [selectedCountry, setSelectedCountry] = useState('KR');
-  const [selectedCategory, setSelectedCategory] = useState('전체');
-
-  // ----------------------------------------------------
-  // [신규 추가] 스크랩북 전용 가짜 데이터 및 함수들
-  // ----------------------------------------------------
-  const [folders, setFolders] = useState([
-    { id: 1, name: '미국 증시 이슈' },
-    { id: 2, name: 'AI 기술 뉴스' },
-    { id: 3, name: '반도체 트렌드' }
-  ]);
-
-  const [scraps, setScraps] = useState([
-    { id: 101, title: '엔비디아 신형 칩 발표, 주가 시간외 5% 상승', source: '로이터', date: '2026-05-30', category: '기술·IT', comment_count: 5 },
-    { id: 102, title: 'OpenAI, 차세대 대규모 언어모델 학습 시작', source: '테크크런치', date: '2026-05-29', category: '기술·IT', comment_count: 2 }
-  ]);
-
-  const addFolder = () => {
-    const folderName = prompt('새 폴더 이름을 입력하세요:');
-    if (folderName) {
-      setFolders([...folders, { id: Date.now(), name: folderName }]);
-    }
+  // 국가 선택 토글 함수
+  const toggleCountry = (key) => {
+    setSelectedCountries((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
   };
-  // ----------------------------------------------------
 
-  const fetchLatestArticles = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/v1/sessions/latest/articles');
-      if (!response.ok) throw new Error('데이터 로드 실패');
-      const data = await response.json();
-      setArticles(data);
-    } catch (err) {
-      // 서버 연동 전 화면 확인을 위한 더미 데이터 주입
-      setArticles([
-        {
-          id: 1,
-          category: '기술·IT',
-          media: 'TechCrunch',
-          rank: 1,
-          title: '오픈AI, 차세대 추론 모델 gpt-5 대규모 업데이트 발표',
-          bullets: [
-            '기존 모델 대비 복잡한 수학 및 코딩 추론 능력이 45% 향상되었습니다.',
-            '아시아권 언어 최적화를 통해 한국어 텍스트 처리 속도가 2배 빨라졌습니다.',
-            '내달 초 개발자 API를 시작으로 글로벌 전역에 순차 배포될 예정입니다.'
-          ],
-          content_translated: '오픈AI가 오늘 인공지능 역사에 새로운 획을 그을 차세대 거대언어모델(LLM)인 gpt-5의 세부 명세를 전격 공개했습니다. 이번 모델은 단순 문장 생성을 넘어 인간 수준의 복잡한 추론 로직을 수행할 수 있도록 설계된 것이 가장 큰 특징입니다...',
-          content_original: 'OpenAI today officially unveiled the detailed specifications of its next-generation large language model, gpt-5, marking a significant milestone in AI history. The defining characteristic of this model is its capability to execute complex reasoning logics...',
-          comment_count: 14
-        }
-      ]);
-      setError(null); 
-    } finally {
-      setLoading(false);
+  // 카테고리 선택 토글 함수
+  const toggleCategory = (key) => {
+    setSelectedCategories((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  // 1. 국가가 최소 1개 이상 선택되었는지 확인
+  const isAnyCountrySelected = Object.values(selectedCountries).some((val) => val === true);
+
+  // 2. 분야(카테고리)가 최소 1개 이상 선택되었는지 확인
+  const isAnyCategorySelected = Object.values(selectedCategories).some((val) => val === true);
+
+  // 2단계(국가) -> 3단계(분야) 이동 핸들러
+  const handleCountryNext = () => {
+    if (isAnyCountrySelected) {
+      setView('step3');
+    } else {
+      alert('국가를 최소 1개 이상 선택해주세요!');
     }
   };
 
-  useEffect(() => {
-    fetchLatestArticles();
-  }, []);
-
-  const openArticleDetail = (article) => {
-    setSelectedArticle(article);
-    setIsModalOpen(true);
-    setShowOriginal(false); // 모달 열릴 때 아코디언은 항상 닫힌 상태로 시작
+  // 3단계(분야) -> 4단계(알림) 이동 핸들러
+  const handleCategoryNext = () => {
+    if (isAnyCategorySelected) {
+      setView('step4');
+    } else {
+      alert('관심 카테고리를 최소 1개 이상 선택해주세요!');
+    }
   };
 
   return (
-    <div className="mobile-container">
-      {/* 상단 헤더 영역 */}
-      <header className="header">
-        <button className="menu-btn">☰</button>
-        <h1 className="logo">{currentTab === 'home' ? '뉴스브리프' : '내 스크랩북'}</h1>
-        <button className="alert-btn">🔔<span className="badge">3</span></button>
-      </header>
-
-      {/* ---------------------------------------------------- */}
-      // [1번 화면] 홈(뉴스 브리핑) 탭일 때 보여줄 내용 (어제 코드 전체)
-      {/* ---------------------------------------------------- */}
-      {currentTab === 'home' && (
-        <>
-          <div className="country-tabs">
-            <button className={selectedCountry === 'KR' ? 'active' : ''} onClick={() => setSelectedCountry('KR')}>🇰🇷 한국</button>
-            <button className={selectedCountry === 'US' ? 'active' : ''} onClick={() => setSelectedCountry('US')}>🇺🇸 미국</button>
-            <button className={selectedCountry === 'JP' ? 'active' : ''} onClick={() => setSelectedCountry('JP')}>🇯🇵 일본</button>
+    <div className="app-global-layout">
+      
+      {/* 1. 온보딩 STEP 1 / 4: 소셜 로그인 */}
+      {view === 'onboarding' && (
+        <div className="onboarding-center-box">
+          <div className="step-indicator">STEP 1 / 4</div>
+          <div className="app-brand-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="24" height="24" rx="6" fill="#1C1C1E"/>
+              <path d="M7 8h10M7 12h10M7 16h7" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
           </div>
-
-          <div className="status-bar">
-            🟢 크롤 완료 · 다음 세션까지 <span>대기 중</span>
+          <h1 className="brand-heading">뉴스브리프</h1>
+          <p className="brand-description">
+            AI가 5시간마다 자동으로 요약해주는<br />3개국 주요 뉴스
+          </p>
+          <div className="auth-button-group">
+            <button className="social-login-btn google-btn" onClick={() => setView('step2')}>
+              <span className="icon">G</span> Google로 계속하기
+            </button>
+            <button className="social-login-btn apple-btn" onClick={() => setView('step2')}>
+              <span className="icon"></span> Apple로 계속하기
+            </button>
+            <button className="social-login-btn kakao-btn" onClick={() => setView('step2')}>
+              <span className="icon">💬</span> 카카오로 시작하기
+            </button>
           </div>
-
-          <main className="content">
-            <h2 className="section-title">오늘의 브리핑</h2>
-            
-            <div className="category-scroll">
-              {['전체', '정치', '경제', '사회', '기술·IT', '스포츠'].map((cat) => (
-                <button key={cat} className={selectedCategory === cat ? 'cat-active' : ''} onClick={() => setSelectedCategory(cat)}>{cat}</button>
-              ))}
-            </div>
-
-            <div className="news-list">
-              {articles.map((article) => (
-                <div key={article.id} className="news-card click-effect" onClick={() => openArticleDetail(article)}>
-                  <div className="card-meta">
-                    <span className="badge-tag">{article.category}</span>
-                    <span className="media-name">{article.media} · {article.rank}위</span>
-                  </div>
-                  <h3 className="news-title">{article.title}</h3>
-                  <ul className="news-bullets">
-                    {article.bullets.map((bullet, idx) => <li key={idx}>{bullet}</li>)}
-                  </ul>
-                  <div className="card-footer">
-                    <button className="action-btn">📄 원문 보기</button>
-                    <button className="action-btn">💬 {article.comment_count}</button>
-                    <button className="bookmark-btn" onClick={(e) => e.stopPropagation()}>🔖</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </main>
-        </>
+          <p className="terms-notice">
+            계속하면 <span className="underline">이용약관</span>과 <span className="underline">개인정보처리방침</span>에<br />동의하는 것으로 간주됩니다
+          </p>
+        </div>
       )}
 
-      {/* ---------------------------------------------------- */}
-      {/* [2번 화면] 스크랩 탭일 때 보여줄 내용 (피그마 디자인 반영) */}
-      {/* ---------------------------------------------------- */}
-      {currentTab === 'scrap' && (
-        <main className="content" style={{ paddingBottom: '80px', paddingTop: '10px' }}>
+      {/* 2. 온보딩 STEP 2 / 4: 국가 선택 */}
+      {view === 'step2' && (
+        <div className="onboarding-center-box">
+          <div className="step-progress-bar">
+            <div className="progress-fill" style={{ width: '25%' }}></div>
+          </div>
+          <div className="step-indicator" style={{ marginTop: '20px' }}>STEP 2 / 4</div>
+          <h2 className="step-main-title">어떤 나라 뉴스를 볼까요?</h2>
+          <p className="step-sub-title">최소 1개 이상 선택해주세요</p>
           
-          {/* 타이틀 및 저장 개수 */}
-          <div style={{ marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: '#fff', marginBottom: '4px' }}>내 스크랩</h2>
-            <span style={{ fontSize: '13px', color: '#888' }}>{scraps.length + 40}개 저장됨</span>
-          </div>
+          <div className="selection-list">
+            <div className={`selection-card ${selectedCountries.kr ? 'checked' : ''}`} onClick={() => toggleCountry('kr')}>
+              <div className="card-left"><span>🇰🇷</span> <strong>한국</strong> <small>네이버 뉴스</small></div>
+              <input type="checkbox" checked={selectedCountries.kr} readOnly />
+            </div>
 
-          {/* 폴더 섹션 */}
-          <div style={{ marginBottom: '30px' }}>
-            <span style={{ fontSize: '12px', color: '#888', display: 'block', marginBottom: '10px' }}>폴더</span>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-              {/* 기존 폴더들 (피그마 스타일로 세로 정렬 및 큰 숫자 반영) */}
-              {folders.map((folder, idx) => {
-                // 피그마에 있는 숫자 비슷하게 매칭 (18, 12, 8...)
-                const counts = [18, 12, 8];
-                const count = counts[idx] || 0;
-                const icons = ['🔮', '🏦', '🎨'];
-                const icon = icons[idx] || '📁';
+            <div className={`selection-card ${selectedCountries.us ? 'checked' : ''}`} onClick={() => toggleCountry('us')}>
+              <div className="card-left"><span>🇺🇸</span> <strong>미국</strong> <small>CNN</small></div>
+              <input type="checkbox" checked={selectedCountries.us} readOnly />
+            </div>
 
-                return (
-                  <div key={folder.id} className="click-effect" style={{ background: '#1e1e1e', padding: '16px', borderRadius: '16px', border: '1px solid #2d2d2d', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '90px', position: 'relative' }}>
-                    <div style={{ fontSize: '18px' }}>{icon}</div>
-                    <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#eee', marginTop: '12px' }}>{folder.name}</span>
-                    <span style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '24px', fontWeight: 'bold', color: '#fff' }}>{count}</span>
-                  </div>
-                );
-              })}
-
-              {/* [피그ma 반영] 격자 안에 예쁘게 들어간 '+ 새 폴더' 버튼 */}
-              <div onClick={addFolder} className="click-effect" style={{ background: '#1a1a1a', padding: '16px', borderRadius: '16px', border: '1px dashed #444', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '90px', cursor: 'pointer' }}>
-                <span style={{ fontSize: '20px', color: '#888', marginBottom: '4px' }}>+</span>
-                <span style={{ fontSize: '13px', color: '#888' }}>새 폴더</span>
-              </div>
+            <div className={`selection-card ${selectedCountries.jp ? 'checked' : ''}`} onClick={() => toggleCountry('jp')}>
+              <div className="card-left"><span>🇯🇵</span> <strong>일본</strong> <small>야후재팬</small></div>
+              <input type="checkbox" checked={selectedCountries.jp} readOnly />
             </div>
           </div>
 
-          {/* 스크랩된 기사 리스트 세션 */}
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <span style={{ fontSize: '14px', color: '#fff', fontWeight: 'bold' }}>AI-반도체 <span style={{ color: '#888', fontWeight: 'normal', fontSize: '13px' }}>18개</span></span>
-              <span style={{ fontSize: '12px', color: '#888', cursor: 'pointer' }}>최신순 ▼</span>
-            </div>
-
-            <div className="news-list">
-              {scraps.map((scrap) => (
-                <div key={scrap.id} className="news-card click-effect">
-                  <div className="card-meta">
-                    <span className="badge-tag">{scrap.category}</span>
-                    <span className="media-name">{scrap.source} · {scrap.date}</span>
-                  </div>
-                  <h3 className="news-title" style={{ marginBottom: '0px' }}>{scrap.title}</h3>
-                  <div className="card-footer" style={{ marginTop: '10px' }}>
-                    <button className="action-btn">💬 {scrap.comment_count}</button>
-                    <button className="bookmark-btn" style={{ color: '#4caf50' }}>🔖</button>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="navigation-actions">
+            <button className="back-nav-btn" onClick={() => setView('onboarding')}>이전</button>
+            <button className={`forward-nav-btn ${!isAnyCountrySelected ? 'disabled' : ''}`} onClick={handleCountryNext}>
+              다음 →
+            </button>
           </div>
-        </main>
+        </div>
       )}
 
-      {/* 하단 네비게이션 바 (버튼 클릭 시 화면 스위칭 기능 추가) */}
-      <nav className="bottom-nav">
-        <button 
-          className={`nav-item ${currentTab === 'home' ? 'active-nav' : ''}`} 
-          onClick={() => setCurrentTab('home')}
-        >
-          🏠<br/>홈
-        </button>
-        <button 
-          className={`nav-item ${currentTab === 'scrap' ? 'active-nav' : ''}`} 
-          onClick={() => setCurrentTab('scrap')}
-        >
-          🗂️<br/>스크랩
-        </button>
-        <button className="nav-item">🔔<br/>알림</button>
-        <button className="nav-item">⚙️<br/>설정</button>
-      </nav>
+      {/* 3. 온보딩 STEP 3 / 4: 관심 카테고리 */}
+      {view === 'step3' && (
+        <div className="onboarding-center-box">
+          <div className="step-progress-bar">
+            <div className="progress-fill" style={{ width: '50%' }}></div>
+          </div>
+          <div className="step-indicator" style={{ marginTop: '20px' }}>STEP 3 / 4</div>
+          <h2 className="step-main-title">관심 카테고리</h2>
+          <p className="step-sub-title">선택한 분야 위주로 보여드려요</p>
+
+          <div className="category-matrix-grid">
+            <div className={`matrix-item ${selectedCategories.it ? 'selected' : ''}`} onClick={() => toggleCategory('it')}>
+              💻<br /><span>기술·IT</span>
+            </div>
+            <div className={`matrix-item ${selectedCategories.economy ? 'selected' : ''}`} onClick={() => toggleCategory('economy')}>
+              💰<br /><span>경제</span>
+            </div>
+            <div className={`matrix-item ${selectedCategories.politics ? 'selected' : ''}`} onClick={() => toggleCategory('politics')}>
+              🏛️<br /><span>정치</span>
+            </div>
+            <div className={`matrix-item ${selectedCategories.society ? 'selected' : ''}`} onClick={() => toggleCategory('society')}>
+              👥<br /><span>사회</span>
+            </div>
+            <div className={`matrix-item ${selectedCategories.sports ? 'selected' : ''}`} onClick={() => toggleCategory('sports')}>
+              ⚽<br /><span>스포츠</span>
+            </div>
+            <div className={`matrix-item ${selectedCategories.entertainment ? 'selected' : ''}`} onClick={() => toggleCategory('entertainment')}>
+              🎬<br /><span>연예·문화</span>
+            </div>
+          </div>
+
+          <div className="navigation-actions">
+            <button className="back-nav-btn" onClick={() => setView('step2')}>이전</button>
+            {/* 분야가 하나도 선택되지 않으면 비활성화 스타일(disabled) 적용 */}
+            <button className={`forward-nav-btn ${!isAnyCategorySelected ? 'disabled' : ''}`} onClick={handleCategoryNext}>
+              다음 →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 4. 온보딩 STEP 4 / 4: 알림 수신 동의 */}
+      {view === 'step4' && (
+        <div className="onboarding-center-box">
+          <div className="step-progress-bar">
+            <div className="progress-fill" style={{ width: '100%' }}></div>
+          </div>
+          <div className="step-indicator" style={{ marginTop: '20px' }}>STEP 4 / 4</div>
+          <h2 className="step-main-title">알림 받을게요?</h2>
+          <p className="step-sub-title">언제든 설정에서 변경할 수 있어요</p>
+
+          <div className="toggle-option-list">
+            <div className="toggle-row-item">
+              <div className="toggle-text-info"><strong>새 세션 도착</strong><br /><small>5시간마다 알림</small></div>
+              <label className="switch-input-label"><input type="checkbox" defaultChecked /><span className="slider-round"></span></label>
+            </div>
+            <div className="toggle-row-item">
+              <div className="toggle-text-info"><strong>관심 핫이슈</strong><br /><small>반복 등장 키워드</small></div>
+              <label className="switch-input-label"><input type="checkbox" defaultChecked /><span className="slider-round"></span></label>
+            </div>
+            <div className="toggle-row-item">
+              <div className="toggle-text-info"><strong>스크랩 댓글 알림</strong><br /><small>댓글 새로 달릴 때</small></div>
+              <label className="switch-input-label"><input type="checkbox" /><span className="slider-round"></span></label>
+            </div>
+          </div>
+
+          <button className="onboarding-finish-btn" onClick={() => setView('home')}>시작하기</button>
+        </div>
+      )}
+
+      {/* 5. 메인 홈 화면 진입 상태 */}
+      {view === 'home' && (
+        <div className="main-app-content-view">
+          <h2 style={{ textAlign: 'center', marginTop: '100px' }}>🎉 홈 브리핑 화면 진입 완료!</h2>
+          <button className="social-login-btn google-btn" style={{ maxWidth: '200px', margin: '20px auto' }} onClick={() => setView('onboarding')}>
+            처음으로 돌아가기
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }

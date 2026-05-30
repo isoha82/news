@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */ // 🌟 props validation 빨간 줄 에러를 꺼주는 치트키 주석입니다!
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
@@ -11,19 +11,25 @@ function App() {
   const [selectedCountries, setSelectedCountries] = useState({ kr: true, us: true, jp: false });
   const [selectedCategories, setSelectedCategories] = useState({ it: true, economy: true, politics: false, society: false, sports: false, entertainment: false });
   
-  // --- [상태 관리] 알림 3종 세트 ---
-  const [pushSettings, setPushSettings] = useState({ 
-    session: true,   
-    hotissue: true,  
-    comment: false   
-  });
+  // --- [상태 관리] 알림 온오프 설정 ---
+  const [pushSettings, setPushSettings] = useState({ session: true, hotissue: true, comment: false });
+
+  // --- [상태 관리] 🔔 알림 센터 실시간 데이터 연동 ---
+  const [notifications, setNotifications] = useState([
+    { id: 1, type: 'session', icon: '✨', text: '<strong>14:00 세션 브리핑</strong>이 도착했습니다. 오늘 오후의 핵심 이슈를 놓치지 마세요!', time: '방금 전', unread: true },
+    { id: 2, type: 'hotissue', icon: '🔥', text: '관심 분야에 <strong>"반도체 수출"</strong> 관련 핫이슈 키워드가 반복적으로 등장하고 있습니다.', time: '2시간 전', unread: true },
+    { id: 3, type: 'comment', icon: '💬', text: '내 스크랩 기사 "한은 기준금리 동결..."에 <strong>새로운 원문 댓글 4개</strong>가 추가되었습니다.', time: '어제', unread: false }
+  ]);
+
+  // 안 읽은 알림의 개수를 실시간 계산해서 홈 배지에 뿌려줍니다
+  const unreadCount = notifications.filter(n => n.unread).length;
 
   const toggleCountry = (key) => setSelectedCountries(prev => ({ ...prev, [key]: !prev[key] }));
   const toggleCategory = (key) => setSelectedCategories(prev => ({ ...prev, [key]: !prev[key] }));
   const isAnyCountrySelected = Object.values(selectedCountries).some(val => val === true);
   const isAnyCategorySelected = Object.values(selectedCategories).some(val => val === true);
 
-  // 화면 외곽(body) 배경까지 다크모드 연동
+  // 외곽 브라우저 배경까지 다크모드 연동
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add('dark-body');
@@ -49,15 +55,9 @@ function App() {
           <p className="brand-description">AI가 5시간마다 자동으로 요약해주는<br />3개국 주요 뉴스</p>
           
           <div className="auth-button-group">
-            <button className="social-login-btn google-btn" onClick={() => setView('step2')}>
-              <span className="icon">G</span> Google로 계속하기
-            </button>
-            <button className="social-login-btn apple-btn" onClick={() => setView('step2')}>
-              <span className="icon"></span> Apple로 계속하기
-            </button>
-            <button className="social-login-btn kakao-btn" onClick={() => setView('step2')}>
-              <span className="icon">💬</span> 카카오로 시작하기
-            </button>
+            <button className="social-login-btn google-btn" onClick={() => setView('step2')}><span className="icon">G</span> Google로 계속하기</button>
+            <button className="social-login-btn apple-btn" onClick={() => setView('step2')}><span className="icon"></span> Apple로 계속하기</button>
+            <button className="social-login-btn kakao-btn" onClick={() => setView('step2')}><span className="icon">💬</span> 카카오로 시작하기</button>
           </div>
           <p className="terms-notice">계속하면 <span className="underline">이용약관</span>과 <span className="underline">개인정보처리방침</span>에<br />동의하는 것으로 간주됩니다</p>
         </div>
@@ -143,7 +143,6 @@ function App() {
                 <span className="slider-round"></span>
               </label>
             </div>
-            
             <div className="toggle-row-item">
               <div className="toggle-text-info"><strong>관심 핫이슈</strong><br /><small>반복 등장 키워드</small></div>
               <label className="switch-input-label">
@@ -151,7 +150,6 @@ function App() {
                 <span className="slider-round"></span>
               </label>
             </div>
-
             <div className="toggle-row-item">
               <div className="toggle-text-info"><strong>스크랩 댓글 알림</strong><br /><small>댓글 새로 달릴 때</small></div>
               <label className="switch-input-label">
@@ -160,7 +158,6 @@ function App() {
               </label>
             </div>
           </div>
-
           <div className="navigation-actions single-action">
             <button className="onboarding-finish-btn" onClick={() => setView('home')}>시작하기</button>
           </div>
@@ -173,7 +170,20 @@ function App() {
           onArticleClick={(article) => setSelectedArticle(article)} 
           isDarkMode={isDarkMode} 
           setIsDarkMode={setIsDarkMode}
+          unreadCount={unreadCount}
           onProfileClick={() => setView('mypage')} 
+          onNotificationClick={() => setView('notification')}
+        />
+      )}
+
+      {/* 🔔 알림 센터 화면 */}
+      {view === 'notification' && (
+        <NotificationCenterView 
+          onBackToHome={() => setView('home')} 
+          notifications={notifications}
+          setNotifications={setNotifications}
+          setSelectedArticle={setSelectedArticle}
+          setView={setView}
         />
       )}
 
@@ -205,7 +215,7 @@ function App() {
 }
 
 // 🏠 홈 타임라인 컴포넌트
-function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, onProfileClick }) {
+function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, unreadCount, onProfileClick, onNotificationClick }) {
   const [currentCountry, setCurrentCountry] = useState('kr');
   const [currentCat, setCurrentCat] = useState('all');
 
@@ -213,11 +223,10 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, onProfile
     { 
       id: 1, rank: 1, category: '기술·IT', source: '네이버 뉴스', 
       title: '반도체 수출 3개월 연속 증가, AI 수요가 견인', 
-      bullets: ['5월 반도체 수출액 전년 대비 18% 증가해 3개월 연속 상승세를 이어갔다', 'HBM 등 AI용 고부가치 메모리가 성장을 주도했으며, 평균 단가도 상승했다', '업계는 하반기에도 출하량이 늘어날 것으로 보고 있으며, 정부는 추가 지원책을 검토 중이다'], 
+      bullets: ['5월 반도체 수출액 전년 대비 18% 증가해 3개월 연속 상승세를 이어갔다', 'HBM 등 AI용 고부가치 메모리가 성장 주도했으며, 평균 단가도 상승했다', '업계는 하반기에도 출하량이 늘어날 것으로 보고 있으며, 정부는 추가 지원책을 검토 중이다'], 
       replies: 142 
     },
-    { id: 2, rank: 2, category: '경제', source: '네이버 뉴스', title: '한은 기준금리 동결, 시장 예상 부합', bullets: ['금통위 만장일치로 2.75% 유지 결정', '물가 안정세 지속이라고 판단'], replies: 87 },
-    { id: 3, rank: 3, category: '정치', source: '네이버 뉴스', title: '국회 본회의서 민생법안 7건 통과', bullets: ['소상공인 지원법 개정안 등 여야 합의 처리', '주거안정 관련 법안도 함께 의결'], replies: 312 },
+    { id: 2, rank: 2, category: '경제', source: '네이버 뉴스', title: '한은 기준금리 동결, 시장 예상 부합', bullets: ['금통위 만장일치로 2.75% 유지 결정', '물가 안정세 지속이라고 판단'], replies: 87 }
   ];
 
   return (
@@ -233,7 +242,9 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, onProfile
           <button className="theme-toggle-icon" onClick={() => setIsDarkMode(!isDarkMode)}>
             {isDarkMode ? '☀️' : '🌙'}
           </button>
-          <div className="noti-icon-badge">🔔<span>3</span></div>
+          <div className="noti-icon-badge" style={{ cursor: 'pointer' }} onClick={onNotificationClick}>
+            🔔{unreadCount > 0 && <span>{unreadCount}</span>}
+          </div>
           <div className="user-avatar" onClick={onProfileClick}>민</div>
         </div>
       </div>
@@ -247,7 +258,7 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, onProfile
       <h1 className="main-page-title">오늘의 브리핑</h1>
 
       <div className="category-chips">
-        {[['all', '전체'], ['politics', '정치'], ['economy', '경제'], ['society', '사회'], ['it', '기술·IT'], ['sports', '스포츠']].map(([key, label]) => (
+        {[['all', '전체'], ['politics', '정치'], ['economy', '경제'], ['it', '기술·IT']].map(([key, label]) => (
           <button key={key} className={currentCat === key ? 'active' : ''} onClick={() => setCurrentCat(key)}>{label}</button>
         ))}
       </div>
@@ -257,10 +268,7 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, onProfile
           <div key={art.id} className="article-main-card" onClick={() => onArticleClick(art)}>
             <div className="card-rank-num">{art.rank}</div>
             <div className="card-body-content">
-              <div className="card-meta-info">
-                <span className="cat-badge">{art.category}</span>
-                <span className="src-text">{art.source}</span>
-              </div>
+              <div className="card-meta-info"><span className="cat-badge">{art.category}</span> {art.source}</div>
               <h2 className="article-card-title">{art.title}</h2>
               <ul className="article-bullet-summary">
                 {art.bullets.map((b, idx) => <li key={idx}>{b}</li>)}
@@ -272,6 +280,62 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, onProfile
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// 🔔 알림 센터 컴포넌트
+function NotificationCenterView({ onBackToHome, notifications, setNotifications, setSelectedArticle, setView }) {
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+  };
+
+  const handleNotiClick = (noti) => {
+    setNotifications(prev => prev.map(n => n.id === noti.id ? { ...n, unread: false } : n));
+    if (noti.type === 'session' || noti.type === 'hotissue') {
+      setSelectedArticle({
+        rank: 1, category: '기술·IT', source: '네이버 뉴스',
+        title: '반도체 수출 3개월 연속 증가, AI 수요가 견인',
+        bullets: ['5월 반도체 수출액 전년 대비 18% 증가해 상승세 지속', 'HBM 등 AI용 고부가치 메모리가 성장을 주도했으며, 평균 단가도 상승했다', '업계는 하반기에도 출하량이 대폭 늘어날 것으로 보고 있으며, 정부는 추가 지원책을 검토 중이다'],
+        replies: 142
+      });
+    } else {
+      setView('home');
+    }
+  };
+
+  const deleteNoti = (e, id) => {
+    e.stopPropagation();
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  return (
+    <div className="notification-container">
+      <div className="notification-top-nav">
+        <button className="back-to-home-btn" onClick={onBackToHome}>← 홈 브리핑으로</button>
+        <span className="page-center-title">알림 센터</span>
+        <button className="noti-all-read-btn" onClick={markAllAsRead}>모두 읽음</button>
+      </div>
+
+      <div className="notification-scroll-area">
+        {notifications.length === 0 ? (
+          <div style={{ textAlign: 'center', color: '#AEAEB2', marginTop: '40px', fontSize: '13px' }}>
+            수신된 알림이 존재하지 않습니다.
+          </div>
+        ) : (
+          notifications.map(noti => (
+            <div key={noti.id} className={`notification-card-item ${noti.unread ? 'is-unread' : ''}`} onClick={() => handleNotiClick(noti)} style={{ cursor: 'pointer' }}>
+              {noti.unread && <div className="noti-unread-dot"></div>}
+              <div className="noti-icon-wrapper">{noti.icon}</div>
+              <div className="noti-content-box" style={{ paddingRight: '14px' }}>
+                <p className="noti-message-text" dangerouslySetInnerHTML={{ __html: noti.text }}></p>
+                <span className="noti-time-stamp">{noti.time}</span>
+              </div>
+              <button className="noti-delete-x-btn" onClick={(e) => deleteNoti(e, noti.id)}>✕</button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -300,7 +364,7 @@ function MyPageView({ onBackToHome, selectedCountries, toggleCountry, selectedCa
           <h4 className="section-group-title">🌍 브리핑 국가 변경</h4>
           <div className="setting-inline-list">
             {[['kr', '🇰🇷 한국'], ['us', '🇺🇸 미국'], ['jp', '🇯🇵 일본']].map(([key, label]) => (
-              <div key={key} className={`setting-toggle-item ${selectedCountries[key] ? 'active' : ''}`} onClick={() => toggleCountry('kr')}>
+              <div key={key} className={`setting-toggle-item ${selectedCountries[key] ? 'active' : ''}`} onClick={() => toggleCountry(key)}>
                 {label}
               </div>
             ))}
@@ -342,6 +406,18 @@ function MyPageView({ onBackToHome, selectedCountries, toggleCountry, selectedCa
                 <span className="slider-round"></span>
               </label>
             </div>
+          </div>
+        </div>
+
+        <div className="setting-section-box">
+          <h4 className="section-group-title">🔒 계정 안전 및 앱 정보</h4>
+          <div className="system-menu-link" onClick={() => alert('버전 정보: v1.0.4')}>
+            <span>서비스 이용약관 / 개인정보 처리방침</span>
+            <span className="menu-arrow-right">›</span>
+          </div>
+          <div className="system-menu-link logout-trigger" onClick={onLogout}>
+            <span>로그아웃</span>
+            <span className="menu-arrow-right">›</span>
           </div>
         </div>
       </div>
@@ -402,12 +478,6 @@ function ArticleDetailModal({ article, onClose, isDarkMode }) {
             <div className="comment-user-meta"><strong>user****</strong> <small>2시간 전</small></div>
             <p className="comment-text-body">HBM 단가가 계속 올라가서 수출액만 늘어난 거 아닌가요? 물량 기준으로도 봐야 할 듯</p>
             <div className="comment-like-dislike">👍 248  👎 12</div>
-          </div>
-
-          <div className="comment-row-item">
-            <div className="comment-user-meta"><strong>tech****</strong> <small>3시간 전</small></div>
-            <p className="comment-text-body">하반기에는 더 좋아질 거라는 전망이 많네요. 관련주 다시 봐야겠어요</p>
-            <div className="comment-like-dislike">👍 187  👎 5</div>
           </div>
         </div>
 

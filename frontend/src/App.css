@@ -3,12 +3,12 @@
    ========================================================================== */
 body {
   margin: 0; padding: 0;
-  background-color: #F4F4F0; /* 🌟 피그마 외곽의 포근한 라이트 베이지 톤 */
+  background-color: #F4F4F0;
   color: #1C1C1E;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   display: flex; justify-content: center; align-items: flex-start;
   min-height: 100vh; padding: 40px 0; box-sizing: border-box;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.25s ease;
 }
 
 body.dark-body { background-color: #121214 !important; }
@@ -22,7 +22,7 @@ body.dark-body { background-color: #121214 !important; }
 }
 
 /* ==========================================================================
-   2. 🌙 다크모드 공용 스타일 컨트롤
+   2. 다크모드 공용 무드 제어 시스템
    ========================================================================== */
 .app-global-layout.dark-mode-app,
 .modal-main-window.dark-mode-app {
@@ -35,9 +35,8 @@ body.dark-body { background-color: #121214 !important; }
 .dark-mode-app .original-link-banner strong { color: #FFFFFF !important; }
 .dark-mode-app .original-link-banner small { color: #AEAEB2 !important; }
 
-/* 다크모드 컴포넌트 배경 회색 톤 다운 */
-.dark-mode-app .article-main-card, .dark-mode-app .user-profile-card, .dark-mode-app .mypage-toggle-row, .dark-mode-app .toggle-row-item, .dark-mode-app .comment-row-item, .dark-mode-app .original-link-banner, .dark-mode-app .ai-summary-container-box {
-  background-color: #2C2C2E !important; border: 1px solid #3A3A3C !push;
+.dark-mode-app .article-main-card, .dark-mode-app .user-profile-card, .dark-mode-app .mypage-toggle-row, .dark-mode-app .toggle-row-item, .dark-mode-app .comment-row-item, .dark-mode-app .original-link-banner, .dark-mode-app .ai-summary-container-box, .dark-mode-app .notification-card-item {
+  background-color: #2C2C2E !important; border-color: #3A3A3C !important;
 }
 .dark-mode-app .session-timeline-box { background-color: #2C2C2E !important; }
 .dark-mode-app .hour-pill { background-color: #3A3A3C !important; border-color: #48484A !important; color: #AEAEB2 !important; }
@@ -46,17 +45,18 @@ body.dark-body { background-color: #121214 !important; }
 .dark-mode-app .category-chips button.active { background-color: #FFFFFF !important; color: #1C1C1E !important; }
 .dark-mode-app .setting-toggle-item, .dark-mode-app .setting-grid-chip { background-color: #2C2C2E; border-color: #3A3A3C; color: #AEAEB2; }
 .dark-mode-app .setting-toggle-item.active, .dark-mode-app .setting-grid-chip.active { border-color: #FFFFFF !important; color: #FFFFFF !important; background-color: #3A3A3C; }
+.dark-mode-app .notification-card-item.is-unread { background-color: #3A3A3C !important; border-color: #48484A !important; }
+.dark-mode-app .noti-message-text { color: #E5E5EA !important; }
+.dark-mode-app .noti-message-text strong { color: #FFFFFF !important; }
+.dark-mode-app .noti-all-read-btn { color: #AEAEB2 !important; }
 
 /* ==========================================================================
-   3. 온보딩 (STEP 1 ~ 4) 인터페이스
+   3. 온보딩 및 피그마 4분할 진행바 바인딩
    ========================================================================== */
 .onboarding-center-box { width: 100%; display: flex; flex-direction: column; padding: 32px 24px; box-sizing: border-box; }
 .segment-progress-bar { display: flex; width: 100%; gap: 6px; justify-content: space-between; }
 .segment-bar { flex: 1; height: 5px; background-color: #E5E5EA; border-radius: 4px; }
 .segment-bar.fill { background-color: #1C1C1E; }
-.dark-mode-app .segment-bar { background-color: #3A3A3C; }
-.dark-mode-app .segment-bar.fill { background-color: #FFFFFF; }
-
 .step-indicator { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #8E8E93; font-weight: 600; margin-bottom: 24px; text-align: center; }
 .app-brand-icon { margin: 20px 0 16px 0; text-align: center; }
 .brand-heading { font-size: 24px; font-weight: 800; color: #1C1C1E; margin: 0 0 8px 0; text-align: center; }
@@ -71,17 +71,18 @@ body.dark-body { background-color: #121214 !important; }
 .step-main-title { font-size: 22px; font-weight: 800; color: #1C1C1E; margin: 10px 0 6px 0; }
 .step-sub-title { font-size: 14px; color: #8E8E93; margin: 0 0 24px 0; }
 .selection-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
-.selection-card { width: 100%; padding: 16px 20px; border-radius: 14px; background-color: #FFFFFF; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; cursor: pointer; transition: all 0.15s ease; }
+.selection-card { width: 100%; padding: 16px 20px; border-radius: 14px; background-color: #FFFFFF; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; cursor: pointer; }
 .selection-card.is-unselected { border: 1px solid #E5E5EA !important; }
 .selection-card.is-selected { border: 2px solid #1C1C1E !important; }
 .card-left { display: flex; align-items: center; gap: 10px; font-size: 14px; }
 .card-left small { color: #8E8E93; margin-left: 5px; }
 .category-matrix-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 30px; }
-.matrix-item { background-color: #FFFFFF; border-radius: 14px; padding: 20px 10px; font-size: 20px; cursor: pointer; transition: all 0.15s ease; text-align: center; color: #1C1C1E; }
+.matrix-item { background-color: #FFFFFF; border-radius: 14px; padding: 20px 10px; font-size: 20px; cursor: pointer; text-align: center; color: #1C1C1E; }
 .matrix-item.is-unselected { border: 1px solid #E5E5EA !important; }
 .matrix-item.is-selected { border: 2px solid #1C1C1E !important; }
 .matrix-item span { font-size: 13px; font-weight: 600; display: inline-block; margin-top: 6px; color: inherit; }
 
+/* STEP 4: 컴팩트 블랙 토글스위치 */
 .toggle-option-list { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; box-sizing: border-box; }
 .toggle-row-item { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background-color: #FFFFFF; border: 1px solid #E5E5EA; border-radius: 16px; box-sizing: border-box; }
 .toggle-text-info { text-align: left; }
@@ -100,10 +101,10 @@ input:checked + .slider-round:before { transform: translateX(18px); }
 .back-nav-btn { flex: 1; padding: 14px; background-color: #F2F2F7; color: #1C1C1E; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 14px; }
 .forward-nav-btn { flex: 2; padding: 14px; background-color: #1C1C1E; color: #FFFFFF; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 14px; }
 .forward-nav-btn.is-disabled { background-color: #AEAEB2 !important; cursor: not-allowed !important; }
-.onboarding-finish-btn { width: 100%; padding: 16px; background-color: #1C1C1E; color: #FFFFFF; border: none; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; }
+.onboarding-finish-btn { width: 100%; padding: 16px; background-color: #1C1C1E; color: #FFFFFF; border: none; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; text-align: center; }
 
 /* ==========================================================================
-   4. 🏠 오늘의 브리핑 메인 홈 화면 스타일
+   4. 🏠 오늘의 브리핑 홈 타임라인 및 마이페이지 설정 구조
    ========================================================================== */
 .home-container { padding: 20px 16px; width: 100%; box-sizing: border-box; }
 .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; width: 100%; gap: 8px; }
@@ -124,16 +125,6 @@ input:checked + .slider-round:before { transform: translateX(18px); }
 .category-chips button { border: none; background: #F2F2F7; padding: 8px 14px; border-radius: 20px; font-size: 13px; color: #1C1C1E; font-weight: 500; cursor: pointer; white-space: nowrap; }
 .category-chips button.active { background: #1C1C1E; color: #fff; }
 
-.session-timeline-box { background: #F4F4F0; border-radius: 16px; padding: 14px; margin-bottom: 20px; }
-.timeline-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
-.timeline-meta { color: #8E8E93; font-weight: 400; }
-.timeline-hours-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.hour-pill { background: #fff; text-align: center; padding: 6px 2px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #8E8E93; border: 1px solid #E5E5EA; }
-.hour-pill.current-now { background: #1C1C1E; color: #fff; border: none; }
-.hour-pill small { font-size: 9px; font-weight: 400; display: block; margin-top: 1px; }
-.session-sub-title { font-size: 13px; font-weight: 700; color: #1C1C1E; margin-bottom: 12px; display: flex; justify-content: space-between; }
-.session-sub-title .right-label { color: #8E8E93; font-weight: 400; font-size: 11px; }
-
 .articles-list { display: flex; flex-direction: column; gap: 12px; }
 .article-main-card { display: flex; background: #fff; border: 1px solid #E5E5EA; border-radius: 16px; padding: 16px; cursor: pointer; }
 .card-rank-num { font-size: 18px; font-weight: 800; color: #AEAEB2; width: 24px; }
@@ -143,9 +134,8 @@ input:checked + .slider-round:before { transform: translateX(18px); }
 .article-card-title { font-size: 15px; font-weight: 700; margin: 0 0 8px 0; line-height: 1.4; color: #1C1C1E; }
 .article-bullet-summary { padding-left: 16px; margin: 0 0 12px 0; font-size: 13px; color: #636366; }
 .card-bottom-actions { display: flex; gap: 14px; font-size: 11px; color: #8E8E93; align-items: center; }
-.more-articles-btn { text-align: center; font-size: 12px; color: #8E8E93; padding: 12px; border: 1px dashed #E5E5EA; border-radius: 12px; margin-top: 12px; cursor: pointer; font-weight: 500; }
 
-/* 마이페이지 기본 */
+/* 마이페이지 뼈대 스타일 가이드 */
 .mypage-container { padding: 24px 16px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; height: 100%; }
 .mypage-top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; width: 100%; }
 .back-to-home-btn { background: none; border: none; font-size: 13px; font-weight: 600; color: #007AFF; cursor: pointer; padding: 0; }
@@ -169,66 +159,61 @@ input:checked + .slider-round:before { transform: translateX(18px); }
 .toggle-info { text-align: left; padding-right: 12px; }
 .toggle-info strong { font-size: 13px; color: #1C1C1E; display: block; margin-bottom: 2px; }
 .toggle-info p { font-size: 11px; color: #8E8E93; margin: 0; }
+.system-menu-link { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #F2F2F7; font-size: 13px; font-weight: 600; color: #636366; cursor: pointer; }
+.menu-arrow-right { font-size: 16px; color: #C7C7CC; }
+.logout-trigger { color: #FF3B30 !important; }
 
 /* ==========================================================================
-   5. 💬 [핵심 고정] 피그마 이미지 기반 상세 모달 버그 대수정 
+   5. 💬 피그마 이미지 기반 상세 모달 (테두리 버그 완벽 패치판)
    ========================================================================== */
-.modal-screen-overlay { 
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-  background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; 
-}
-.modal-main-window { 
-  width: 100%; max-width: 430px; height: 90vh; background: #ffffff; 
-  border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden; 
-}
-
-.modal-top-bar { display: flex; justify-content: space-between; padding: 18px 16px; border-bottom: none; align-items: center; }
+.modal-screen-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; }
+.modal-main-window { width: 100%; max-width: 430px; height: 90vh; background: #ffffff; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden; }
+.modal-top-bar { display: flex; justify-content: space-between; padding: 18px 16px; align-items: center; }
 .modal-back-arrow { background: none; border: none; font-size: 14px; font-weight: 600; color: #8E8E93; cursor: pointer; }
 .modal-top-right-btns { display: flex; gap: 16px; }
 .icon-action-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #636366; }
-
 .modal-scroll-area { flex: 1; overflow-y: auto; padding: 10px 20px; }
 .modal-meta-row { display: flex; gap: 6px; font-size: 11px; color: #AEAEB2; margin-bottom: 12px; }
 .modal-cat-tag { font-weight: bold; color: #5856D6; background: #F2F2F7; padding: 2px 6px; border-radius: 4px; }
-.modal-source-meta { display: inline-flex; align-items: center; margin-top: 2px; }
-
 .modal-article-title { font-size: 22px; font-weight: 800; margin: 0 0 20px 0; line-height: 1.4; color: #1C1C1E; letter-spacing: -0.5px; }
 
-/* 🌟 원문기사배너 테두리 및 마진 간격 피그마 완전 일치화 */
-.original-link-banner { 
-  width: 100%; text-align: left; background: #F9F9FA; 
-  border: 1px solid #E5E5EA !important; /* 회색 테두리 선 명시 */
-  padding: 16px 18px; border-radius: 14px; margin-bottom: 24px; position: relative; cursor: pointer; display: block; box-sizing: border-box;
-}
+.original-link-banner { width: 100%; text-align: left; background: #F9F9FA; border: 1px solid #E5E5EA !important; padding: 16px 18px; border-radius: 14px; margin-bottom: 24px; position: relative; cursor: pointer; display: block; box-sizing: border-box; }
 .naver-icon { background: #03C75A; color: #fff; padding: 3px 6px; border-radius: 50%; font-size: 11px; font-weight: bold; margin-right: 6px; display: inline-block; }
 .original-link-banner strong { font-size: 14px; color: #1C1C1E; font-weight: 700; }
 .original-link-banner small { font-size: 12px; color: #8E8E93; display: block; margin-top: 4px; padding-left: 26px; }
 
-/* 🌟 [테두리 버그 완결] AI 요약 박스를 회색 테두리 라인이 있는 부드러운 박스로 격상 */
-.ai-summary-container-box { 
-  background: #F8F8F6; /* 피그마 내부 색감과 정밀 싱크 */
-  border: 1px solid #E5E5EA !important; /* 흐릿하게 날아가던 박스 경계선 완벽 마킹 */
-  border-radius: 16px; padding: 18px; margin-bottom: 28px; box-sizing: border-box;
-}
+.ai-summary-container-box { background: #F8F8F6; border: 1px solid #E5E5EA !important; border-radius: 16px; padding: 18px; margin-bottom: 28px; box-sizing: border-box; }
 .ai-box-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; color: #1C1C1E; }
 .ai-speed-tag { font-size: 11px; color: #AEAEB2; font-weight: 400; }
 .ai-bullet-points { padding-left: 18px; margin: 0; font-size: 13.5px; color: #2C2C2E; line-height: 1.65; }
 .ai-bullet-points li { margin-bottom: 10px; }
-.ai-bullet-points li::marker { color: #AEAEB2; }
 
-/* 🌟 댓글 영역 피그마 완전 가이드 연동 */
 .comments-section-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: #1C1C1E; display: flex; align-items: center; }
 .comment-count-text { color: #AEAEB2; font-weight: 400; font-size: 13px; margin-left: 6px; }
-
-/* 개별 댓글 박스 테두리 복구 완료 */
-.comment-row-item { 
-  background: #F9F9FA; padding: 14px 16px; border-radius: 12px; margin-bottom: 12px; 
-  border: 1px solid #E5E5EA !important; /* 댓글 구분선 유실 현상 차단 */
-  box-sizing: border-box;
-}
-.comment-user-meta { font-size: 12px; color: #636366; margin-bottom: 6px; font-weight: 600; display: flex; justify-content: space-between; }
-.comment-user-meta small { color: #AEAEB2; font-weight: 400; margin-left: 6px; }
-.comment-text-body { font-size: 13px; margin: 0 0 10px 0; color: #2C2C2E; line-height: 1.5; text-align: left; }
-.comment-like-dislike { font-size: 11px; color: #8E8E93; text-align: right; font-weight: 500; display: flex; justify-content: flex-end; gap: 10px; }
-
+.comment-row-item { background: #F9F9FA; padding: 14px 16px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #E5E5EA !important; box-sizing: border-box; }
+.comment-user-meta { font-size: 12px; color: #636366; margin-bottom: 4px; font-weight: 600; }
+.comment-text-body { font-size: 13px; margin: 0 0 10px 0; color: #2C2C2E; line-height: 1.5; }
 .modal-bottom-notice-bar { background: #F2F2F7; padding: 12px 16px; display: flex; justify-content: space-between; font-size: 10px; color: #8E8E93; border-top: 1px solid #E5E5EA; }
+
+/* ==========================================================================
+   6. 🔔 알림 센터 (Notification Center) 기능 고도화 스타일
+   ========================================================================== */
+.notification-container { padding: 24px 16px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; height: 100%; }
+.notification-top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; }
+.noti-all-read-btn { background: none; border: none; font-size: 13px; color: #8E8E93; cursor: pointer; font-weight: 600; padding: 0; }
+.notification-scroll-area { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+
+.notification-card-item { display: flex; gap: 14px; background: #FFFFFF; border: 1px solid #E5E5EA; border-radius: 16px; padding: 16px; position: relative; box-sizing: border-box; text-align: left; transition: all 0.2s ease; }
+.notification-card-item.is-unread { background: #F9F9FA; border-color: #D1D1D6; }
+.noti-unread-dot { position: absolute; top: 18px; left: 12px; width: 6px; height: 6px; background-color: #FF3B30; border-radius: 50%; }
+.notification-card-item.is-unread .noti-icon-wrapper { margin-left: 6px; }
+
+.noti-icon-wrapper { font-size: 20px; display: flex; align-items: flex-start; margin-top: 1px; }
+.noti-content-box { flex: 1; }
+.noti-message-text { font-size: 13.5px; line-height: 1.5; color: #2C2C2E; margin: 0 0 6px 0; }
+.noti-message-text strong { font-weight: 700; color: #1C1C1E; }
+.noti-time-stamp { font-size: 11px; color: #AEAEB2; }
+
+/* 미니멀 X 삭제 버튼 */
+.noti-delete-x-btn { position: absolute; top: 14px; right: 14px; background: none; border: none; color: #C7C7CC; cursor: pointer; font-size: 12px; font-weight: bold; transition: color 0.15s ease, transform 0.15s ease; }
+.noti-delete-x-btn:hover { color: #FF3B30 !important; transform: scale(1.1); }

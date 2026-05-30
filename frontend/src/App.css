@@ -40,3 +40,45 @@
 .read-the-docs {
   color: #888;
 }
+/* --- 스크랩북 화면 관련 스타일 추가 --- */
+
+/* 폴더 목록을 가로로 2개씩 이쁘게 정렬해주는 스타일 */
+.scrap-folder-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* 폴더 하나하나의 디자인 */
+.folder-item {
+  background: #1e1e1e;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #2d2d2d;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.folder-item:active {
+  background: #2a2a2a; /* 눌렀을 때 살짝 밝아지는 효과 */
+}
+
+/* 폴더 추가 버튼 스타일 */
+.add-folder-btn {
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 5px 12px;
+  border-radius: 20px;
+  fontSize: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-folder-btn:hover {
+  background: #333;
+  border-color: #666;
+}

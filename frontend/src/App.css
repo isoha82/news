@@ -3,12 +3,12 @@
    ========================================================================== */
 body {
   margin: 0; padding: 0;
-  background-color: #F4F4F0; /* 라이트 테마 어울리는 포근한 그레이 베이지 */
+  background-color: #F4F4F0; /* 🌟 피그마 외곽의 포근한 라이트 베이지 톤 */
   color: #1C1C1E;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   display: flex; justify-content: center; align-items: flex-start;
   min-height: 100vh; padding: 40px 0; box-sizing: border-box;
-  transition: background-color 0.25s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 body.dark-body { background-color: #121214 !important; }
@@ -22,7 +22,7 @@ body.dark-body { background-color: #121214 !important; }
 }
 
 /* ==========================================================================
-   2. 다크모드 무드 제어 시스템
+   2. 🌙 다크모드 공용 스타일 컨트롤
    ========================================================================== */
 .app-global-layout.dark-mode-app,
 .modal-main-window.dark-mode-app {
@@ -31,34 +31,29 @@ body.dark-body { background-color: #121214 !important; }
 .dark-mode-app .brand-heading, .dark-mode-app .step-main-title, .dark-mode-app .main-page-title, .dark-mode-app .article-card-title, .dark-mode-app .modal-article-title, .dark-mode-app .ai-box-title, .dark-mode-app .comments-section-title, .dark-mode-app .comment-text-body, .dark-mode-app .toggle-text-info strong, .dark-mode-app .page-center-title, .dark-mode-app .user-profile-card h3, .dark-mode-app .section-group-title, .dark-mode-app .toggle-info strong {
   color: #FFFFFF !important;
 }
-.dark-mode-app .article-main-card, .dark-mode-app .user-profile-card, .dark-mode-app .mypage-toggle-row, .dark-mode-app .toggle-row-item {
-  background-color: #2C2C2E !important; border-color: #3A3A3C !important;
+.dark-mode-app .ai-bullet-points, .dark-mode-app .ai-bullet-points li, .dark-mode-app .ai-bullet-points strong { color: #FFFFFF !important; }
+.dark-mode-app .original-link-banner strong { color: #FFFFFF !important; }
+.dark-mode-app .original-link-banner small { color: #AEAEB2 !important; }
+
+/* 다크모드 컴포넌트 배경 회색 톤 다운 */
+.dark-mode-app .article-main-card, .dark-mode-app .user-profile-card, .dark-mode-app .mypage-toggle-row, .dark-mode-app .toggle-row-item, .dark-mode-app .comment-row-item, .dark-mode-app .original-link-banner, .dark-mode-app .ai-summary-container-box {
+  background-color: #2C2C2E !important; border: 1px solid #3A3A3C !push;
 }
-.dark-mode-app .update-status-bar { background-color: #2C2C2E !important; color: #E5E5EA !important; }
+.dark-mode-app .session-timeline-box { background-color: #2C2C2E !important; }
+.dark-mode-app .hour-pill { background-color: #3A3A3C !important; border-color: #48484A !important; color: #AEAEB2 !important; }
+.dark-mode-app .hour-pill.current-now { background-color: #FFFFFF !important; color: #1C1C1E !important; }
+.dark-mode-app .category-chips button, .dark-mode-app .update-status-bar { background-color: #2C2C2E !important; color: #E5E5EA !important; }
+.dark-mode-app .category-chips button.active { background-color: #FFFFFF !important; color: #1C1C1E !important; }
 .dark-mode-app .setting-toggle-item, .dark-mode-app .setting-grid-chip { background-color: #2C2C2E; border-color: #3A3A3C; color: #AEAEB2; }
 .dark-mode-app .setting-toggle-item.active, .dark-mode-app .setting-grid-chip.active { border-color: #FFFFFF !important; color: #FFFFFF !important; background-color: #3A3A3C; }
 
 /* ==========================================================================
-   3. 온보딩 베이스 레이아웃 및 🟢 피그마 4분할 바 인프라
+   3. 온보딩 (STEP 1 ~ 4) 인터페이스
    ========================================================================== */
 .onboarding-center-box { width: 100%; display: flex; flex-direction: column; padding: 32px 24px; box-sizing: border-box; }
-
-/* 🟢 피그마 전용 4분할 세그먼트 프로그레스 바 스타일 */
-.segment-progress-bar {
-  display: flex;
-  width: 100%;
-  gap: 6px;
-  justify-content: space-between;
-}
-.segment-bar {
-  flex: 1;
-  height: 5px;
-  background-color: #E5E5EA; /* 기본 비활성화 회색 바 */
-  border-radius: 4px;
-}
-.segment-bar.fill {
-  background-color: #1C1C1E; /* 피그마 블랙 활성화 바 */
-}
+.segment-progress-bar { display: flex; width: 100%; gap: 6px; justify-content: space-between; }
+.segment-bar { flex: 1; height: 5px; background-color: #E5E5EA; border-radius: 4px; }
+.segment-bar.fill { background-color: #1C1C1E; }
 .dark-mode-app .segment-bar { background-color: #3A3A3C; }
 .dark-mode-app .segment-bar.fill { background-color: #FFFFFF; }
 
@@ -73,8 +68,8 @@ body.dark-body { background-color: #121214 !important; }
 .apple-btn { background-color: #FFFFFF; border: 1px solid #1C1C1E; }
 .terms-notice { font-size: 11px; line-height: 1.5; color: #8E8E93; margin-top: 10px; text-align: center; }
 
-.step-main-title { font-size: 22px; font-weight: 800; color: #1C1C1E; margin: 10px 0 6px 0; text-align: left; }
-.step-sub-title { font-size: 14px; color: #8E8E93; margin: 0 0 24px 0; text-align: left; }
+.step-main-title { font-size: 22px; font-weight: 800; color: #1C1C1E; margin: 10px 0 6px 0; }
+.step-sub-title { font-size: 14px; color: #8E8E93; margin: 0 0 24px 0; }
 .selection-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
 .selection-card { width: 100%; padding: 16px 20px; border-radius: 14px; background-color: #FFFFFF; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; cursor: pointer; transition: all 0.15s ease; }
 .selection-card.is-unselected { border: 1px solid #E5E5EA !important; }
@@ -87,27 +82,16 @@ body.dark-body { background-color: #121214 !important; }
 .matrix-item.is-selected { border: 2px solid #1C1C1E !important; }
 .matrix-item span { font-size: 13px; font-weight: 600; display: inline-block; margin-top: 6px; color: inherit; }
 
-/* ==========================================================================
-   ⚙️ 4. 🟢 [핵심 피그마 동기화] STEP 4 컴팩트 알림 카드 및 검은색 스위치
-   ========================================================================== */
-.toggle-option-list { 
-  width: 100%; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; box-sizing: border-box; 
-}
-.toggle-row-item { 
-  width: 100%; display: flex; justify-content: space-between; align-items: center; 
-  padding: 16px 20px; background-color: #FFFFFF; border: 1px solid #E5E5EA; border-radius: 16px; box-sizing: border-box; 
-}
+.toggle-option-list { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; box-sizing: border-box; }
+.toggle-row-item { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background-color: #FFFFFF; border: 1px solid #E5E5EA; border-radius: 16px; box-sizing: border-box; }
 .toggle-text-info { text-align: left; }
 .toggle-text-info strong { font-size: 15px; color: #1C1C1E; font-weight: 700; }
 .toggle-text-info small { font-size: 12px; color: #AEAEB2; display: block; margin-top: 3px; }
 
-/* 🟢 피그마 가이드라인 수치 전용 iOS형 검은색(Black) 토글스위치 */
 .switch-input-label { position: relative; display: inline-block; width: 44px; height: 26px; min-width: 44px; }
 .switch-input-label input { opacity: 0; width: 0; height: 0; }
 .slider-round { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E5E5EA; transition: .3s; border-radius: 34px; }
 .slider-round:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
-/* 🟢 체크 시 기존 초록색 대신 피그마 가이드대로 완전한 검은색(#1C1C1E) 처리 */
 input:checked + .slider-round { background-color: #1C1C1E; }
 input:checked + .slider-round:before { transform: translateX(18px); }
 
@@ -116,12 +100,10 @@ input:checked + .slider-round:before { transform: translateX(18px); }
 .back-nav-btn { flex: 1; padding: 14px; background-color: #F2F2F7; color: #1C1C1E; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 14px; }
 .forward-nav-btn { flex: 2; padding: 14px; background-color: #1C1C1E; color: #FFFFFF; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 14px; }
 .forward-nav-btn.is-disabled { background-color: #AEAEB2 !important; cursor: not-allowed !important; }
-
-/* 대형 검은색 시작하기 메인 공용 버튼 */
-.onboarding-finish-btn { width: 100%; padding: 16px; background-color: #1C1C1E; color: #FFFFFF; border: none; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; text-align: center; }
+.onboarding-finish-btn { width: 100%; padding: 16px; background-color: #1C1C1E; color: #FFFFFF; border: none; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; }
 
 /* ==========================================================================
-   5. 홈 및 마이페이지 인프라 구조
+   4. 🏠 오늘의 브리핑 메인 홈 화면 스타일
    ========================================================================== */
 .home-container { padding: 20px 16px; width: 100%; box-sizing: border-box; }
 .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; width: 100%; gap: 8px; }
@@ -142,6 +124,16 @@ input:checked + .slider-round:before { transform: translateX(18px); }
 .category-chips button { border: none; background: #F2F2F7; padding: 8px 14px; border-radius: 20px; font-size: 13px; color: #1C1C1E; font-weight: 500; cursor: pointer; white-space: nowrap; }
 .category-chips button.active { background: #1C1C1E; color: #fff; }
 
+.session-timeline-box { background: #F4F4F0; border-radius: 16px; padding: 14px; margin-bottom: 20px; }
+.timeline-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+.timeline-meta { color: #8E8E93; font-weight: 400; }
+.timeline-hours-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.hour-pill { background: #fff; text-align: center; padding: 6px 2px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #8E8E93; border: 1px solid #E5E5EA; }
+.hour-pill.current-now { background: #1C1C1E; color: #fff; border: none; }
+.hour-pill small { font-size: 9px; font-weight: 400; display: block; margin-top: 1px; }
+.session-sub-title { font-size: 13px; font-weight: 700; color: #1C1C1E; margin-bottom: 12px; display: flex; justify-content: space-between; }
+.session-sub-title .right-label { color: #8E8E93; font-weight: 400; font-size: 11px; }
+
 .articles-list { display: flex; flex-direction: column; gap: 12px; }
 .article-main-card { display: flex; background: #fff; border: 1px solid #E5E5EA; border-radius: 16px; padding: 16px; cursor: pointer; }
 .card-rank-num { font-size: 18px; font-weight: 800; color: #AEAEB2; width: 24px; }
@@ -150,7 +142,10 @@ input:checked + .slider-round:before { transform: translateX(18px); }
 .cat-badge { background: #F2F2F7; color: #5856D6; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
 .article-card-title { font-size: 15px; font-weight: 700; margin: 0 0 8px 0; line-height: 1.4; color: #1C1C1E; }
 .article-bullet-summary { padding-left: 16px; margin: 0 0 12px 0; font-size: 13px; color: #636366; }
+.card-bottom-actions { display: flex; gap: 14px; font-size: 11px; color: #8E8E93; align-items: center; }
+.more-articles-btn { text-align: center; font-size: 12px; color: #8E8E93; padding: 12px; border: 1px dashed #E5E5EA; border-radius: 12px; margin-top: 12px; cursor: pointer; font-weight: 500; }
 
+/* 마이페이지 기본 */
 .mypage-container { padding: 24px 16px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; height: 100%; }
 .mypage-top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; width: 100%; }
 .back-to-home-btn { background: none; border: none; font-size: 13px; font-weight: 600; color: #007AFF; cursor: pointer; padding: 0; }
@@ -175,10 +170,65 @@ input:checked + .slider-round:before { transform: translateX(18px); }
 .toggle-info strong { font-size: 13px; color: #1C1C1E; display: block; margin-bottom: 2px; }
 .toggle-info p { font-size: 11px; color: #8E8E93; margin: 0; }
 
-/* 모달 기초 */
-.modal-screen-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; }
-.modal-main-window { width: 100%; max-width: 430px; height: 88vh; background: #fff; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden; }
-.modal-top-bar { display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid #F2F2F7; }
-.modal-back-arrow { background: none; border: none; font-size: 13px; font-weight: 600; color: #636366; cursor: pointer; }
-.modal-scroll-area { flex: 1; overflow-y: auto; padding: 20px 16px; }
-.modal-article-title { font-size: 19px; font-weight: 800; color: #1C1C1E; }
+/* ==========================================================================
+   5. 💬 [핵심 고정] 피그마 이미지 기반 상세 모달 버그 대수정 
+   ========================================================================== */
+.modal-screen-overlay { 
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+  background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; 
+}
+.modal-main-window { 
+  width: 100%; max-width: 430px; height: 90vh; background: #ffffff; 
+  border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden; 
+}
+
+.modal-top-bar { display: flex; justify-content: space-between; padding: 18px 16px; border-bottom: none; align-items: center; }
+.modal-back-arrow { background: none; border: none; font-size: 14px; font-weight: 600; color: #8E8E93; cursor: pointer; }
+.modal-top-right-btns { display: flex; gap: 16px; }
+.icon-action-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #636366; }
+
+.modal-scroll-area { flex: 1; overflow-y: auto; padding: 10px 20px; }
+.modal-meta-row { display: flex; gap: 6px; font-size: 11px; color: #AEAEB2; margin-bottom: 12px; }
+.modal-cat-tag { font-weight: bold; color: #5856D6; background: #F2F2F7; padding: 2px 6px; border-radius: 4px; }
+.modal-source-meta { display: inline-flex; align-items: center; margin-top: 2px; }
+
+.modal-article-title { font-size: 22px; font-weight: 800; margin: 0 0 20px 0; line-height: 1.4; color: #1C1C1E; letter-spacing: -0.5px; }
+
+/* 🌟 원문기사배너 테두리 및 마진 간격 피그마 완전 일치화 */
+.original-link-banner { 
+  width: 100%; text-align: left; background: #F9F9FA; 
+  border: 1px solid #E5E5EA !important; /* 회색 테두리 선 명시 */
+  padding: 16px 18px; border-radius: 14px; margin-bottom: 24px; position: relative; cursor: pointer; display: block; box-sizing: border-box;
+}
+.naver-icon { background: #03C75A; color: #fff; padding: 3px 6px; border-radius: 50%; font-size: 11px; font-weight: bold; margin-right: 6px; display: inline-block; }
+.original-link-banner strong { font-size: 14px; color: #1C1C1E; font-weight: 700; }
+.original-link-banner small { font-size: 12px; color: #8E8E93; display: block; margin-top: 4px; padding-left: 26px; }
+
+/* 🌟 [테두리 버그 완결] AI 요약 박스를 회색 테두리 라인이 있는 부드러운 박스로 격상 */
+.ai-summary-container-box { 
+  background: #F8F8F6; /* 피그마 내부 색감과 정밀 싱크 */
+  border: 1px solid #E5E5EA !important; /* 흐릿하게 날아가던 박스 경계선 완벽 마킹 */
+  border-radius: 16px; padding: 18px; margin-bottom: 28px; box-sizing: border-box;
+}
+.ai-box-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; color: #1C1C1E; }
+.ai-speed-tag { font-size: 11px; color: #AEAEB2; font-weight: 400; }
+.ai-bullet-points { padding-left: 18px; margin: 0; font-size: 13.5px; color: #2C2C2E; line-height: 1.65; }
+.ai-bullet-points li { margin-bottom: 10px; }
+.ai-bullet-points li::marker { color: #AEAEB2; }
+
+/* 🌟 댓글 영역 피그마 완전 가이드 연동 */
+.comments-section-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: #1C1C1E; display: flex; align-items: center; }
+.comment-count-text { color: #AEAEB2; font-weight: 400; font-size: 13px; margin-left: 6px; }
+
+/* 개별 댓글 박스 테두리 복구 완료 */
+.comment-row-item { 
+  background: #F9F9FA; padding: 14px 16px; border-radius: 12px; margin-bottom: 12px; 
+  border: 1px solid #E5E5EA !important; /* 댓글 구분선 유실 현상 차단 */
+  box-sizing: border-box;
+}
+.comment-user-meta { font-size: 12px; color: #636366; margin-bottom: 6px; font-weight: 600; display: flex; justify-content: space-between; }
+.comment-user-meta small { color: #AEAEB2; font-weight: 400; margin-left: 6px; }
+.comment-text-body { font-size: 13px; margin: 0 0 10px 0; color: #2C2C2E; line-height: 1.5; text-align: left; }
+.comment-like-dislike { font-size: 11px; color: #8E8E93; text-align: right; font-weight: 500; display: flex; justify-content: flex-end; gap: 10px; }
+
+.modal-bottom-notice-bar { background: #F2F2F7; padding: 12px 16px; display: flex; justify-content: space-between; font-size: 10px; color: #8E8E93; border-top: 1px solid #E5E5EA; }

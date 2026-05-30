@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types */ // 🌟 props validation 빨간 줄 에러를 꺼주는 치트키 주석입니다!
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
@@ -7,15 +7,15 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false); 
   const [selectedArticle, setSelectedArticle] = useState(null); 
 
-  // --- [상태 관리] 국가 및 카테고리 ---
+  // --- [상태 관리] 국가 및 관심 카테고리 ---
   const [selectedCountries, setSelectedCountries] = useState({ kr: true, us: true, jp: false });
   const [selectedCategories, setSelectedCategories] = useState({ it: true, economy: true, politics: false, society: false, sports: false, entertainment: false });
   
-  // --- [상태 관리] 피그마 이미지 기준 알림 3종 셋팅 (초기값 이미지 동기화) ---
+  // --- [상태 관리] 알림 3종 세트 ---
   const [pushSettings, setPushSettings] = useState({ 
-    session: true,   // 새 세션 도착 (On)
-    hotissue: true,  // 관심 핫이슈 (On)
-    comment: false   // 스크랩 댓글 알림 (Off)
+    session: true,   
+    hotissue: true,  
+    comment: false   
   });
 
   const toggleCountry = (key) => setSelectedCountries(prev => ({ ...prev, [key]: !prev[key] }));
@@ -23,7 +23,7 @@ function App() {
   const isAnyCountrySelected = Object.values(selectedCountries).some(val => val === true);
   const isAnyCategorySelected = Object.values(selectedCategories).some(val => val === true);
 
-  // 화면 외곽(body) 다크모드 클래스 제어
+  // 화면 외곽(body) 배경까지 다크모드 연동
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add('dark-body');
@@ -35,7 +35,7 @@ function App() {
   return (
     <div className={`app-global-layout ${isDarkMode ? 'dark-mode-app' : ''}`}>
       
-      {/* STEP 1: 소셜 로그인 (외곽 검은 배경 완전 해제 상태) */}
+      {/* STEP 1: 소셜 로그인 */}
       {view === 'onboarding' && (
         <div className="onboarding-center-box">
           <div className="step-indicator">STEP 1 / 4</div>
@@ -66,7 +66,6 @@ function App() {
       {/* STEP 2: 국가 선택 */}
       {view === 'step2' && (
         <div className="onboarding-center-box">
-          {/* 4분할 세그먼트 프로그레스 바 (1칸 채움) */}
           <div className="segment-progress-bar">
             <div className="segment-bar fill"></div>
             <div className="segment-bar"></div>
@@ -100,7 +99,6 @@ function App() {
       {/* STEP 3: 관심 카테고리 */}
       {view === 'step3' && (
         <div className="onboarding-center-box">
-          {/* 4분할 세그먼트 프로그레스 바 (2칸 채움) */}
           <div className="segment-progress-bar">
             <div className="segment-bar fill"></div>
             <div className="segment-bar fill"></div>
@@ -124,10 +122,9 @@ function App() {
         </div>
       )}
 
-      {/* 🟢 STEP 4: 알림 설정 (피그마 이미지_3dd5fd.png 기준 완벽 동기화) */}
+      {/* STEP 4: 알림 설정 */}
       {view === 'step4' && (
         <div className="onboarding-center-box">
-          {/* 4분할 세그먼트 프로그레스 바 (4칸 전부 채움) */}
           <div className="segment-progress-bar">
             <div className="segment-bar fill"></div>
             <div className="segment-bar fill"></div>
@@ -139,7 +136,6 @@ function App() {
           <p className="step-sub-title">언제든 설정에서 변경할 수 있어요</p>
           
           <div className="toggle-option-list">
-            {/* 1. 새 세션 도착 */}
             <div className="toggle-row-item">
               <div className="toggle-text-info"><strong>새 세션 도착</strong><br /><small>5시간마다 알림</small></div>
               <label className="switch-input-label">
@@ -148,7 +144,6 @@ function App() {
               </label>
             </div>
             
-            {/* 2. 관심 핫이슈 */}
             <div className="toggle-row-item">
               <div className="toggle-text-info"><strong>관심 핫이슈</strong><br /><small>반복 등장 키워드</small></div>
               <label className="switch-input-label">
@@ -157,7 +152,6 @@ function App() {
               </label>
             </div>
 
-            {/* 3. 스크랩 댓글 알림 (피그마 가이드 반영 추가) */}
             <div className="toggle-row-item">
               <div className="toggle-text-info"><strong>스크랩 댓글 알림</strong><br /><small>댓글 새로 달릴 때</small></div>
               <label className="switch-input-label">
@@ -216,7 +210,12 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, onProfile
   const [currentCat, setCurrentCat] = useState('all');
 
   const articles = [
-    { id: 1, rank: 1, category: '기술·IT', source: '네이버 뉴스', title: '반도체 수출 3개월 연속 증가, AI 수요가 견인', bullets: ['5월 반도체 수출액 전년 대비 18% 증가', 'HBM 등 AI용 메모리가 성장 주도'], replies: 142 },
+    { 
+      id: 1, rank: 1, category: '기술·IT', source: '네이버 뉴스', 
+      title: '반도체 수출 3개월 연속 증가, AI 수요가 견인', 
+      bullets: ['5월 반도체 수출액 전년 대비 18% 증가해 3개월 연속 상승세를 이어갔다', 'HBM 등 AI용 고부가치 메모리가 성장을 주도했으며, 평균 단가도 상승했다', '업계는 하반기에도 출하량이 늘어날 것으로 보고 있으며, 정부는 추가 지원책을 검토 중이다'], 
+      replies: 142 
+    },
     { id: 2, rank: 2, category: '경제', source: '네이버 뉴스', title: '한은 기준금리 동결, 시장 예상 부합', bullets: ['금통위 만장일치로 2.75% 유지 결정', '물가 안정세 지속이라고 판단'], replies: 87 },
     { id: 3, rank: 3, category: '정치', source: '네이버 뉴스', title: '국회 본회의서 민생법안 7건 통과', bullets: ['소상공인 지원법 개정안 등 여야 합의 처리', '주거안정 관련 법안도 함께 의결'], replies: 312 },
   ];
@@ -301,7 +300,7 @@ function MyPageView({ onBackToHome, selectedCountries, toggleCountry, selectedCa
           <h4 className="section-group-title">🌍 브리핑 국가 변경</h4>
           <div className="setting-inline-list">
             {[['kr', '🇰🇷 한국'], ['us', '🇺🇸 미국'], ['jp', '🇯🇵 일본']].map(([key, label]) => (
-              <div key={key} className={`setting-toggle-item ${selectedCountries[key] ? 'active' : ''}`} onClick={() => toggleCountry(key)}>
+              <div key={key} className={`setting-toggle-item ${selectedCountries[key] ? 'active' : ''}`} onClick={() => toggleCountry('kr')}>
                 {label}
               </div>
             ))}
@@ -352,14 +351,69 @@ function MyPageView({ onBackToHome, selectedCountries, toggleCountry, selectedCa
 
 // 💬 AI 요약 상세 모달 컴포넌트
 function ArticleDetailModal({ article, onClose, isDarkMode }) {
+  if (!article) return null;
+
   return (
     <div className="modal-screen-overlay" onClick={onClose}>
       <div className={`modal-main-window ${isDarkMode ? 'dark-mode-app' : ''}`} onClick={(e) => e.stopPropagation()}>
+        
         <div className="modal-top-bar">
           <button className="modal-back-arrow" onClick={onClose}>← 14:00 세션으로</button>
+          <div className="modal-top-right-btns">
+            <button className="icon-action-btn">🔖</button>
+            <button className="icon-action-btn">🔗</button>
+          </div>
         </div>
+
         <div className="modal-scroll-area">
+          <div className="modal-meta-row">
+            <span className="modal-cat-tag">{article.category || '일반'}</span>
+            <span className="modal-source-meta">
+              🇰🇷 한국 · {article.source || '뉴스 출처'} · 14:00 세션 · {article.rank || 1}위
+            </span>
+          </div>
+
           <h1 className="modal-article-title">{article.title}</h1>
+
+          <button className="original-link-banner" onClick={() => alert('언론사 원문 페이지로 이동합니다.')}>
+            <span className="naver-icon">N</span> <strong>원문 기사 보기</strong><br/>
+            <small>news.naver.com</small>
+            <span className="arrow-out">↗</span>
+          </button>
+
+          <div className="ai-summary-container-box">
+            <div className="ai-box-title">✨ AI 요약 <span className="ai-speed-tag">5초만에 핵심 파악</span></div>
+            <ul className="ai-bullet-points">
+              {article.bullets && article.bullets.length > 0 ? (
+                article.bullets.map((bullet, idx) => <li key={idx}>{bullet}</li>)
+              ) : (
+                <>
+                  <li>5월 반도체 수출액이 전년 대비 <strong>18% 증가</strong>해 3개월 연속 상승세를 이어갔다.</li>
+                  <li>HBM 등 AI용 고부가 가치 메모리가 성장을 주도했으며, 평균 단가도 함께 상승했다.</li>
+                  <li>업계는 하반기에도 출하량이 대폭 늘어날 것으로 보고 있으며, 정부는 추가 지원책을 검토 중이다.</li>
+                </>
+              )}
+            </ul>
+          </div>
+
+          <div className="comments-section-title">💬 원문 댓글 <span className="comment-count-text">{article.replies || 142}개</span></div>
+          
+          <div className="comment-row-item">
+            <div className="comment-user-meta"><strong>user****</strong> <small>2시간 전</small></div>
+            <p className="comment-text-body">HBM 단가가 계속 올라가서 수출액만 늘어난 거 아닌가요? 물량 기준으로도 봐야 할 듯</p>
+            <div className="comment-like-dislike">👍 248  👎 12</div>
+          </div>
+
+          <div className="comment-row-item">
+            <div className="comment-user-meta"><strong>tech****</strong> <small>3시간 전</small></div>
+            <p className="comment-text-body">하반기에는 더 좋아질 거라는 전망이 많네요. 관련주 다시 봐야겠어요</p>
+            <div className="comment-like-dislike">👍 187  👎 5</div>
+          </div>
+        </div>
+
+        <div className="modal-bottom-notice-bar">
+          <span>댓글은 원문 출처에서 가져온 내용입니다.</span>
+          <span>19:00 세션에서 갱신 예정</span>
         </div>
       </div>
     </div>

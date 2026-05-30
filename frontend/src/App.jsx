@@ -7,15 +7,23 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false); 
   const [selectedArticle, setSelectedArticle] = useState(null); 
 
-  // --- [온보딩 상태 관리] ---
+  // --- [상태 관리] 국가 및 카테고리 ---
   const [selectedCountries, setSelectedCountries] = useState({ kr: true, us: true, jp: false });
   const [selectedCategories, setSelectedCategories] = useState({ it: true, economy: true, politics: false, society: false, sports: false, entertainment: false });
+  
+  // --- [상태 관리] 피그마 이미지 기준 알림 3종 셋팅 (초기값 이미지 동기화) ---
+  const [pushSettings, setPushSettings] = useState({ 
+    session: true,   // 새 세션 도착 (On)
+    hotissue: true,  // 관심 핫이슈 (On)
+    comment: false   // 스크랩 댓글 알림 (Off)
+  });
+
   const toggleCountry = (key) => setSelectedCountries(prev => ({ ...prev, [key]: !prev[key] }));
   const toggleCategory = (key) => setSelectedCategories(prev => ({ ...prev, [key]: !prev[key] }));
   const isAnyCountrySelected = Object.values(selectedCountries).some(val => val === true);
   const isAnyCategorySelected = Object.values(selectedCategories).some(val => val === true);
 
-  // 스마트폰 화면 밖(body)까지 다크모드 배경색 연동
+  // 화면 외곽(body) 다크모드 클래스 제어
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add('dark-body');
@@ -27,7 +35,7 @@ function App() {
   return (
     <div className={`app-global-layout ${isDarkMode ? 'dark-mode-app' : ''}`}>
       
-      {/* STEP 1: 소셜 로그인 */}
+      {/* STEP 1: 소셜 로그인 (외곽 검은 배경 완전 해제 상태) */}
       {view === 'onboarding' && (
         <div className="onboarding-center-box">
           <div className="step-indicator">STEP 1 / 4</div>
@@ -58,7 +66,13 @@ function App() {
       {/* STEP 2: 국가 선택 */}
       {view === 'step2' && (
         <div className="onboarding-center-box">
-          <div className="step-progress-bar"><div className="progress-fill" style={{ width: '25%' }}></div></div>
+          {/* 4분할 세그먼트 프로그레스 바 (1칸 채움) */}
+          <div className="segment-progress-bar">
+            <div className="segment-bar fill"></div>
+            <div className="segment-bar"></div>
+            <div className="segment-bar"></div>
+            <div className="segment-bar"></div>
+          </div>
           <div className="step-indicator" style={{ marginTop: '20px' }}>STEP 2 / 4</div>
           <h2 className="step-main-title">어떤 나라 뉴스를 볼까요?</h2>
           <p className="step-sub-title">최소 1개 이상 선택해주세요</p>
@@ -86,7 +100,13 @@ function App() {
       {/* STEP 3: 관심 카테고리 */}
       {view === 'step3' && (
         <div className="onboarding-center-box">
-          <div className="step-progress-bar"><div className="progress-fill" style={{ width: '50%' }}></div></div>
+          {/* 4분할 세그먼트 프로그레스 바 (2칸 채움) */}
+          <div className="segment-progress-bar">
+            <div className="segment-bar fill"></div>
+            <div className="segment-bar fill"></div>
+            <div className="segment-bar"></div>
+            <div className="segment-bar"></div>
+          </div>
           <div className="step-indicator" style={{ marginTop: '20px' }}>STEP 3 / 4</div>
           <h2 className="step-main-title">관심 카테고리</h2>
           <p className="step-sub-title">선택한 분야 위주로 보여드려요</p>
@@ -104,33 +124,50 @@ function App() {
         </div>
       )}
 
-      {/* STEP 4: 알림 설정 */}
+      {/* 🟢 STEP 4: 알림 설정 (피그마 이미지_3dd5fd.png 기준 완벽 동기화) */}
       {view === 'step4' && (
         <div className="onboarding-center-box">
-          <div className="step-progress-bar"><div className="progress-fill" style={{ width: '100%' }}></div></div>
+          {/* 4분할 세그먼트 프로그레스 바 (4칸 전부 채움) */}
+          <div className="segment-progress-bar">
+            <div className="segment-bar fill"></div>
+            <div className="segment-bar fill"></div>
+            <div className="segment-bar fill"></div>
+            <div className="segment-bar fill"></div>
+          </div>
           <div className="step-indicator" style={{ marginTop: '20px' }}>STEP 4 / 4</div>
           <h2 className="step-main-title">알림 받을게요?</h2>
           <p className="step-sub-title">언제든 설정에서 변경할 수 있어요</p>
           
           <div className="toggle-option-list">
+            {/* 1. 새 세션 도착 */}
             <div className="toggle-row-item">
               <div className="toggle-text-info"><strong>새 세션 도착</strong><br /><small>5시간마다 알림</small></div>
               <label className="switch-input-label">
-                <input type="checkbox" defaultChecked />
+                <input type="checkbox" checked={pushSettings.session} onChange={() => setPushSettings(p => ({ ...p, session: !p.session }))} />
                 <span className="slider-round"></span>
               </label>
             </div>
+            
+            {/* 2. 관심 핫이슈 */}
             <div className="toggle-row-item">
               <div className="toggle-text-info"><strong>관심 핫이슈</strong><br /><small>반복 등장 키워드</small></div>
               <label className="switch-input-label">
-                <input type="checkbox" defaultChecked />
+                <input type="checkbox" checked={pushSettings.hotissue} onChange={() => setPushSettings(p => ({ ...p, hotissue: !p.hotissue }))} />
+                <span className="slider-round"></span>
+              </label>
+            </div>
+
+            {/* 3. 스크랩 댓글 알림 (피그마 가이드 반영 추가) */}
+            <div className="toggle-row-item">
+              <div className="toggle-text-info"><strong>스크랩 댓글 알림</strong><br /><small>댓글 새로 달릴 때</small></div>
+              <label className="switch-input-label">
+                <input type="checkbox" checked={pushSettings.comment} onChange={() => setPushSettings(p => ({ ...p, comment: !p.comment }))} />
                 <span className="slider-round"></span>
               </label>
             </div>
           </div>
 
-          <div className="navigation-actions">
-            <button className="back-nav-btn" onClick={() => setView('step3')}>이전</button>
+          <div className="navigation-actions single-action">
             <button className="onboarding-finish-btn" onClick={() => setView('home')}>시작하기</button>
           </div>
         </div>
@@ -142,6 +179,21 @@ function App() {
           onArticleClick={(article) => setSelectedArticle(article)} 
           isDarkMode={isDarkMode} 
           setIsDarkMode={setIsDarkMode}
+          onProfileClick={() => setView('mypage')} 
+        />
+      )}
+
+      {/* 👤 마이페이지 설정 화면 */}
+      {view === 'mypage' && (
+        <MyPageView 
+          onBackToHome={() => setView('home')}
+          selectedCountries={selectedCountries}
+          toggleCountry={toggleCountry}
+          selectedCategories={selectedCategories}
+          toggleCategory={toggleCategory}
+          pushSettings={pushSettings}
+          setPushSettings={setPushSettings}
+          onLogout={() => setView('onboarding')}
         />
       )}
 
@@ -159,7 +211,7 @@ function App() {
 }
 
 // 🏠 홈 타임라인 컴포넌트
-function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode }) {
+function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode, onProfileClick }) {
   const [currentCountry, setCurrentCountry] = useState('kr');
   const [currentCat, setCurrentCat] = useState('all');
 
@@ -171,22 +223,19 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode }) {
 
   return (
     <div className="home-container">
-      {/* 피그마 규격 맞춤 콤팩트 헤더 */}
       <div className="home-header">
         <div className="logo-section">📑 <span>뉴스브리프</span></div>
-        
         <div className="country-tabs">
           <button className={currentCountry === 'kr' ? 'active' : ''} onClick={() => setCurrentCountry('kr')}>🇰🇷 한국</button>
           <button className={currentCountry === 'us' ? 'active' : ''} onClick={() => setCurrentCountry('us')}>🇺🇸 미국</button>
           <button className={currentCountry === 'jp' ? 'active' : ''} onClick={() => setCurrentCountry('jp')}>🇯🇵 일본</button>
         </div>
-        
         <div className="header-right-icons">
           <button className="theme-toggle-icon" onClick={() => setIsDarkMode(!isDarkMode)}>
             {isDarkMode ? '☀️' : '🌙'}
           </button>
           <div className="noti-icon-badge">🔔<span>3</span></div>
-          <div className="user-avatar">민</div>
+          <div className="user-avatar" onClick={onProfileClick}>민</div>
         </div>
       </div>
 
@@ -195,7 +244,7 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode }) {
         <button className="refresh-btn">🔄 새로고침</button>
       </div>
 
-      <div className="date-heading">2026년 5월 25일 · 월요일</div>
+      <div className="date-heading">2026년 5월 30일 · 토요일</div>
       <h1 className="main-page-title">오늘의 브리핑</h1>
 
       <div className="category-chips">
@@ -203,21 +252,6 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode }) {
           <button key={key} className={currentCat === key ? 'active' : ''} onClick={() => setCurrentCat(key)}>{label}</button>
         ))}
       </div>
-
-      <div className="session-timeline-box">
-        <div className="timeline-header">
-          <span>🕒 세션 타임라인 <small>한국 × 전체</small></span>
-          <span className="timeline-meta">최대 6세션 · 30시간 보관</span>
-        </div>
-        <div className="timeline-hours-grid">
-          {['어제 14:00', '어제 19:00', '오늘 00:00', '오늘 05:00', '오늘 09:00'].map((time) => (
-            <div key={time} className="hour-pill">{time.split(' ')[1]}<br/><small>{time.split(' ')[0]}</small></div>
-          ))}
-          <div className="hour-pill current-now">14:00<br/><small>지금</small></div>
-        </div>
-      </div>
-
-      <div className="session-sub-title">14:00 세션 · 상위 5개 기사 <span className="right-label">세션당 5개 저장</span></div>
 
       <div className="articles-list">
         {articles.map((art) => (
@@ -233,74 +267,99 @@ function HomeTimelineView({ onArticleClick, isDarkMode, setIsDarkMode }) {
                 {art.bullets.map((b, idx) => <li key={idx}>{b}</li>)}
               </ul>
               <div className="card-bottom-actions">
-                <span className="action-link">🔗 원문</span>
-                <span className="action-link">💬 {art.replies}</span>
-                <button className="card-scrap-btn" onClick={(e) => { e.stopPropagation(); alert('스크랩 완료!'); }}>📥 스크랩</button>
+                <span>🔗 원문</span>
+                <span>💬 {art.replies}</span>
               </div>
             </div>
           </div>
         ))}
       </div>
-
-      <div className="more-articles-btn">+ 4번, 5번 기사 더보기</div>
     </div>
   );
 }
 
-// 💬 AI 요약 상세 모달 팝업 컴포넌트
+// 👤 마이페이지 컴포넌트
+function MyPageView({ onBackToHome, selectedCountries, toggleCountry, selectedCategories, toggleCategory, pushSettings, setPushSettings, onLogout }) {
+  return (
+    <div className="mypage-container">
+      <div className="mypage-top-nav">
+        <button className="back-to-home-btn" onClick={onBackToHome}>← 홈 브리핑으로</button>
+        <span className="page-center-title">설정</span>
+        <div style={{ width: '80px' }}></div>
+      </div>
+
+      <div className="user-profile-card">
+        <div className="profile-large-avatar">민</div>
+        <div className="profile-user-info">
+          <h3>김민우 <span className="user-email-tag">kakao</span></h3>
+          <p>minwoo****@kakao.com</p>
+        </div>
+      </div>
+
+      <div className="mypage-scroll-area">
+        <div className="setting-section-box">
+          <h4 className="section-group-title">🌍 브리핑 국가 변경</h4>
+          <div className="setting-inline-list">
+            {[['kr', '🇰🇷 한국'], ['us', '🇺🇸 미국'], ['jp', '🇯🇵 일본']].map(([key, label]) => (
+              <div key={key} className={`setting-toggle-item ${selectedCountries[key] ? 'active' : ''}`} onClick={() => toggleCountry(key)}>
+                {label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="setting-section-box">
+          <h4 className="section-group-title">💡 관심 카테고리 설정</h4>
+          <div className="setting-grid-matrix">
+            {[['it', '💻 IT·기술'], ['economy', '💰 경제'], ['politics', '🏛️ 정치'], ['society', '👥 사회'], ['sports', '⚽ 스포츠'], ['entertainment', '🎬 연예']].map(([key, label]) => (
+              <div key={key} className={`setting-grid-chip ${selectedCategories[key] ? 'active' : ''}`} onClick={() => toggleCategory(key)}>
+                {label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="setting-section-box">
+          <h4 className="section-group-title">🔔 푸시 알림 제어</h4>
+          <div className="mypage-toggle-list">
+            <div className="mypage-toggle-row">
+              <div className="toggle-info"><strong>새 세션 요약 알림</strong><p>5시간마다 맞춤 뉴스브리프 도착 시 알림</p></div>
+              <label className="switch-input-label">
+                <input type="checkbox" checked={pushSettings.session} onChange={() => setPushSettings(p => ({ ...p, session: !p.session }))} />
+                <span className="slider-round"></span>
+              </label>
+            </div>
+            <div className="mypage-toggle-row">
+              <div className="toggle-info"><strong>종합 핫이슈 키워드 알림</strong><p>선택 분야 핫이슈 발생 시 알림</p></div>
+              <label className="switch-input-label">
+                <input type="checkbox" checked={pushSettings.hotissue} onChange={() => setPushSettings(p => ({ ...p, hotissue: !p.hotissue }))} />
+                <span className="slider-round"></span>
+              </label>
+            </div>
+            <div className="mypage-toggle-row">
+              <div className="toggle-info"><strong>스크랩 댓글 알림</strong><p>댓글 새로 달릴 때 알림</p></div>
+              <label className="switch-input-label">
+                <input type="checkbox" checked={pushSettings.comment} onChange={() => setPushSettings(p => ({ ...p, comment: !p.comment }))} />
+                <span className="slider-round"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 💬 AI 요약 상세 모달 컴포넌트
 function ArticleDetailModal({ article, onClose, isDarkMode }) {
   return (
     <div className="modal-screen-overlay" onClick={onClose}>
       <div className={`modal-main-window ${isDarkMode ? 'dark-mode-app' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-top-bar">
           <button className="modal-back-arrow" onClick={onClose}>← 14:00 세션으로</button>
-          <div className="modal-top-right-btns">
-            <button className="icon-action-btn">🔖</button>
-            <button className="icon-action-btn">🔗</button>
-          </div>
         </div>
-
         <div className="modal-scroll-area">
-          <div className="modal-meta-row">
-            <span className="modal-cat-tag">{article.category}</span>
-            <span className="modal-source-meta">🇰🇷 한국 · {article.source} · 14:00 세션 · 1위</span>
-          </div>
-
           <h1 className="modal-article-title">{article.title}</h1>
-
-          <button className="original-link-banner">
-            <span className="naver-icon">N</span> <strong>원문 기사 보기</strong><br/>
-            <small>news.naver.com</small>
-            <span className="arrow-out">↗</span>
-          </button>
-
-          <div className="ai-summary-container-box">
-            <div className="ai-box-title">✨ AI 요약 <span className="ai-speed-tag">5초만에 핵심 파악</span></div>
-            <ul className="ai-bullet-points">
-              <li>5월 반도체 수출액이 전년 대비 <strong>18% 증가</strong>해 3개월 연속 상승세를 이어갔다.</li>
-              <li>HBM 등 AI용 고부가 가치 메모리가 성장을 주도했으며, 평균 단가도 상승했다.</li>
-              <li>업계는 하반기에도 출하량이 늘어날 것으로 보고 있으며, 정부는 추가 지원책을 검토 중이다.</li>
-            </ul>
-          </div>
-
-          <div className="comments-section-title">💬 원문 댓글 <span className="comment-count-text">{article.replies}개</span></div>
-          
-          <div className="comment-row-item">
-            <div className="comment-user-meta"><strong>user****</strong> <small>2시간 전</small></div>
-            <p className="comment-text-body">HBM 단가가 계속 올라가서 수출액만 늘어난 거 아닌가요? 물량 기준으로도 봐야 할 듯</p>
-            <div className="comment-like-dislike">👍 248  👎 12</div>
-          </div>
-
-          <div className="comment-row-item">
-            <div className="comment-user-meta"><strong>tech****</strong> <small>3시간 전</small></div>
-            <p className="comment-text-body">하반기에는 더 좋아질 거라는 전망이 많네요. 관련주 다시 봐야겠어요</p>
-            <div className="comment-like-dislike">👍 187  👎 5</div>
-          </div>
-        </div>
-
-        <div className="modal-bottom-notice-bar">
-          <span>댓글은 원문 출처에서 가져온 내용입니다.</span>
-          <span>19:00 세션에서 갱신 예정</span>
         </div>
       </div>
     </div>

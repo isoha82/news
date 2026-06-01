@@ -6,6 +6,8 @@ const newsRouter = require('./routes/news.router');
 
 const userRouter = require('./routes/user.router');
 
+const sessionsRouter = require('./routes/sessions.router');
+
 const app = express();
 
 app.use(cors());
@@ -18,5 +20,6 @@ app.use('/api/v1/news', newsRouter);
 app.use('/api/v1/auth', authRouter);
 
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/sessions', sessionsRouter);
 
 module.exports = app;

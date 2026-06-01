@@ -14,6 +14,8 @@ const adminRouter = require('./routes/admin.router');
 
 const scrapRouter = require('./routes/scrap.router');
 
+const notificationRouter = require('./routes/notification.router');
+
 const app = express();
 
 app.use(cors());
@@ -32,5 +34,7 @@ app.use('/api/v1', metaRouter);
 app.use('/api/v1/admin', adminRouter);
 
 app.use('/api/v1/scraps', scrapRouter);
+
+app.use('/api/v1/notifications', notificationRouter);
 
 module.exports = app;

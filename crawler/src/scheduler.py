@@ -6,7 +6,7 @@ from crawlers import naver, cnn, yahoo_japan
 from db import get_connection
 from session_manager import create_session, finish_session, fail_session
 from save import get_country_id, get_category_id, save_articles, log_crawl
-from trend_score import recalculate_session_trend_scores
+from notify import notify_session_update, detect_and_notify_hot_issues
 
 CRAWL_INTERVAL_HOURS = int(os.getenv("CRAWL_INTERVAL_HOURS", 5))
 
@@ -17,6 +17,12 @@ CRAWLERS = {
 }
 
 CATEGORIES = ["politics", "economy", "society", "tech", "sports", "culture"]
+
+COUNTRY_NAMES = {
+    "kr": "한국",
+    "us": "미국",
+    "jp": "일본",
+}
 
 
 def run_country(conn, country_code: str, crawler_module):
@@ -47,12 +53,11 @@ def run_country(conn, country_code: str, crawler_module):
 
         finish_session(conn, session_id)
 
-        # 트렌드 스코어 재계산 (저장 완료 후)
+        # 세션 완료 FCM 알림
         try:
-            updated = recalculate_session_trend_scores(session_id)
-            print(f"  [{country_code.upper()}] 트렌드스코어 {updated}개 재계산 완료")
+            notify_session_update(str(session_id), country_id, COUNTRY_NAMES.get(country_code, country_code))
         except Exception as e:
-            print(f"  [{country_code.upper()}] 트렌드스코어 오류 (무시): {e}")
+            print(f"  [{country_code.upper()}] FCM session_update 오류 (무시): {e}")
 
     except Exception as e:
         error_message = str(e)
@@ -96,6 +101,12 @@ def run_all():
 
 def start_scheduler():
     scheduler = BlockingScheduler(timezone="UTC")
+
+    # 메인 크롤링 (5시간 간격)
     scheduler.add_job(run_all, "interval", hours=CRAWL_INTERVAL_HOURS)
+
+    # 핫이슈 탐지 (30분 간격)
+    scheduler.add_job(detect_and_notify_hot_issues, "interval", minutes=30)
+
     run_all()  # 시작 시 즉시 1회 실행
     scheduler.start()

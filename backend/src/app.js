@@ -37,7 +37,7 @@ app.use('/api/v1/scraps', scrapRouter);
 
 app.use('/api/v1/notifications', notificationRouter);
 
-const authRouter = require('./routes/auth');
-app.use('/api/auth', authRouter);
+const localAuthRouter = require('./routes/auth');
+app.use('/api/auth', localAuthRouter);
 
 module.exports = app;

@@ -5,5 +5,3 @@ feedparser==6.0.11
 APScheduler==3.10.4
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
-openai==1.35.7
-firebase-admin==6.5.0

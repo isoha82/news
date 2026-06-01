@@ -6,6 +6,7 @@ from crawlers import naver, cnn, yahoo_japan
 from db import get_connection
 from session_manager import create_session, finish_session, fail_session
 from save import get_country_id, get_category_id, save_articles, log_crawl
+from enrichment import enrich_session_articles
 
 CRAWL_INTERVAL_HOURS = int(os.getenv("CRAWL_INTERVAL_HOURS", 5))
 
@@ -45,6 +46,14 @@ def run_country(conn, country_code: str, crawler_module):
                 crawl_status = "partial"
 
         finish_session(conn, session_id)
+
+        # LLM 요약 (OPENAI_API_KEY 없으면 skip)
+        try:
+            summarized = enrich_session_articles(session_id)
+            if summarized:
+                print(f"  [{country_code.upper()}] LLM 요약 {summarized}개 완료")
+        except Exception as e:
+            print(f"  [{country_code.upper()}] LLM 요약 오류 (무시): {e}")
 
     except Exception as e:
         error_message = str(e)

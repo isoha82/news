@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db/index');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-// 회원가입만!
+// 회원가입
 router.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -40,6 +41,7 @@ router.post('/signup', async (req, res) => {
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 });
+
 // 로그인
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -70,8 +72,16 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: '이메일 또는 비밀번호가 틀렸습니다.' });
     }
 
+    // ✅ JWT 토큰 발급
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+
     res.status(200).json({
       message: '로그인 성공!',
+      token,
       user: {
         id: user.id,
         name: user.name,
@@ -84,6 +94,22 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 });
+// 로그아웃
+router.post('/logout', async (req, res) => {
+  try {
+    const { user_id } = req.body;
+
+    if (!user_id) {
+      return res.status(400).json({ message: '유저 정보가 없습니다.' });
+    }
+
+    // 추후 refresh token 삭제 로직 추가 예정
+    res.status(200).json({ message: '로그아웃 성공!' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
 
 module.exports = router;
-

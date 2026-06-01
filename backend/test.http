@@ -1,0 +1,6 @@
+POST http://localhost:4000/api/auth/logout
+Content-Type: application/json
+
+{
+  "user_id": "46be4c52-b4ee-4f5c-8b55-375fb55bbad6"
+}

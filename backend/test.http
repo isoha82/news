@@ -1,0 +1,9 @@
+###
+
+PUT http://localhost:4000/api/users/46be4c52-b4ee-4f5c-8b55-375fb55bbad6
+Content-Type: application/json
+
+{
+  "name": "수정된이름",
+  "avatar_url": "https://example.com/avatar.png"
+}

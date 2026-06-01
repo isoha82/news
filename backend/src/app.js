@@ -10,4 +10,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// ✅ 추가!
+const authRouter = require('./routes/auth');
+app.use('/api/auth', authRouter);
+
 module.exports = app;

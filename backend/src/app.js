@@ -12,6 +12,8 @@ const metaRouter = require('./routes/meta.router');
 
 const adminRouter = require('./routes/admin.router');
 
+const scrapRouter = require('./routes/scrap.router');
+
 const app = express();
 
 app.use(cors());
@@ -28,5 +30,7 @@ app.use('/api/v1/sessions', sessionsRouter);
 // meta: countries, categories, feed/status 는 공통 prefix 없이 /api/v1 에 직접 마운트
 app.use('/api/v1', metaRouter);
 app.use('/api/v1/admin', adminRouter);
+
+app.use('/api/v1/scraps', scrapRouter);
 
 module.exports = app;

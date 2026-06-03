@@ -1,409 +1,928 @@
-/* ==========================================================================
-   1. 글로벌 배경 제어 (스마트폰 프레임 고정 규격)
-   ========================================================================== */
+:root {
+  --bg-outer: #f4f4f0;
+  --bg-app: #ffffff;
+  --surface: #ffffff;
+  --surface-soft: #f4f4f0;
+  --surface-muted: #f2f2f7;
+  --text-main: #1c1c1e;
+  --text-sub: #636366;
+  --text-muted: #8e8e93;
+  --border: #e5e5ea;
+  --primary: #1c1c1e;
+  --accent: #5856d6;
+  --danger: #ff3b30;
+  --success: #34c759;
+  --shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+  --mobile-max: 430px;
+  --desktop-max: 1180px;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; }
 body {
-  margin: 0; padding: 0;
-  background-color: #F4F4F0; /* 기본 라이트 베이지 외곽 바탕 */
-  color: #1C1C1E;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  display: flex; justify-content: center; align-items: flex-start;
-  min-height: 100vh; padding: 20px 0; box-sizing: border-box;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  margin: 0;
+  padding: 20px 0;
+  min-height: 100svh;
+  background: var(--bg-outer);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-x: hidden;
 }
-
+button, input { font: inherit; }
+button { cursor: pointer; }
 body.dark-body {
-  background-color: #121214 !important; /* 다크모드 시 외곽 블랙 */
+  --bg-outer: #101012;
+  --bg-app: #1c1c1e;
+  --surface: #2c2c2e;
+  --surface-soft: #242426;
+  --surface-muted: #3a3a3c;
+  --text-main: #ffffff;
+  --text-sub: #d1d1d6;
+  --text-muted: #aeaeb2;
+  --border: #3a3a3c;
+  --primary: #ffffff;
+  --shadow: 0 18px 52px rgba(0, 0, 0, 0.45);
 }
 
-/* 🌟 메인 홈 기준 스마트폰 절대 프레임 틀 박제 */
 .app-global-layout {
-  width: 430px;          
-  min-width: 430px;      
-  max-width: 430px;      
-  height: 860px; 
-  background-color: #ffffff;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-  border-radius: 28px; overflow: hidden;
-  box-sizing: border-box; display: flex; flex-direction: column; margin: 0 auto;
+  width: var(--mobile-max);
+  min-width: var(--mobile-max);
+  max-width: var(--mobile-max);
+  height: min(860px, calc(100svh - 40px));
+  min-height: 640px;
+  background: var(--bg-app);
+  color: var(--text-main);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
-
-/* 하단 탭 바 제외 영역 독립 스크롤 내부 뷰 */
 .app-main-content-area {
-  flex: 1;
   width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
-  box-sizing: border-box;
+  overflow-x: hidden;
+  padding-bottom: 76px;
 }
 .app-main-content-area::-webkit-scrollbar { display: none; }
-
-/* 모든 창의 절대 규격 일체화 패딩 */
-.home-container { 
-  padding: 20px 16px 80px 16px; /* 위 20, 좌우 16, 하단 탭바 여백 80 */
-  width: 100%; 
-  box-sizing: border-box; 
+.home-container {
+  width: 100%;
+  min-height: 100%;
+  padding: 20px 16px 96px;
   display: flex;
   flex-direction: column;
 }
+.desktop-top-nav { display: none; }
 
-/* ==========================================================================
-   2. 다크모드 오버라이딩 (가독성 패치 시스템)
-   ========================================================================== */
-.app-global-layout.dark-mode-app,
-.modal-main-window.dark-mode-app {
-  background-color: #1C1C1E !important;
-  color: #F2F2F7 !important;
+.onboarding-center { min-height: 100svh; justify-content: center; align-items: center; text-align: center; padding-bottom: 28px; }
+.step-container { gap: 14px; }
+.step-indicator { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; text-align: center; }
+.step-progress-bar { width: 100%; height: 4px; background: var(--surface-muted); border-radius: 999px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--primary); transition: width .25s ease; }
+.brand-symbol { width: 48px; height: 48px; border-radius: 14px; background: var(--primary); color: var(--bg-app); display: grid; place-items: center; font-size: 24px; font-weight: 800; }
+.brand-heading { font-size: 27px; margin: 14px 0 8px; letter-spacing: -0.5px; }
+.brand-description, .terms-notice, .step-sub-title { color: var(--text-muted); line-height: 1.55; }
+.step-main-title { margin: 6px 0 0; font-size: 24px; letter-spacing: -0.5px; }
+.auth-button-group { width: min(100%, 360px); display: grid; gap: 12px; margin-top: 26px; }
+.social-login-btn { height: 52px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 800; }
+.social-login-btn span { position: absolute; transform: translateX(-130px); font-weight: 900; }
+.apple-btn { background: #000 !important; color: #fff !important; border-color: #000 !important; }
+.kakao-btn { background: #fee500 !important; color: #191919 !important; border-color: #fee500 !important; }
+
+.selection-list { display: grid; gap: 12px; }
+.selection-card, .matrix-item, .toggle-row-item, .article-main-card, .settings-card, .profile-card, .folder-card, .original-link-banner, .comment-row-item {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  border-radius: 18px;
 }
+.selection-card { width: 100%; display: flex; align-items: center; gap: 14px; padding: 16px; text-align: left; }
+.selection-card.is-selected, .matrix-item.is-selected, .folder-card.active { border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.selection-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--surface-muted); display: grid; place-items: center; font-size: 24px; flex: 0 0 auto; }
+.selection-copy { flex: 1; display: grid; gap: 2px; }
+.selection-copy small, .matrix-item small, .toggle-text-info small, .profile-card span, .settings-card p, .page-header-row p { color: var(--text-muted); font-size: 12px; }
+.checkmark { width: 22px; height: 22px; border-radius: 50%; color: var(--accent); font-weight: 900; display: grid; place-items: center; }
+.category-matrix-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.matrix-item { min-height: 118px; padding: 16px; text-align: left; display: grid; gap: 5px; }
+.matrix-icon { font-size: 25px; }
+.matrix-item em { justify-self: end; color: var(--accent); font-style: normal; font-size: 11px; font-weight: 800; }
+.navigation-actions { display: flex; gap: 12px; margin-top: 14px; }
+.back-nav-btn, .forward-nav-btn, .primary-btn { border: 0; border-radius: 14px; padding: 14px 16px; font-weight: 800; }
+.back-nav-btn { flex: 0 0 86px; background: var(--surface-muted); color: var(--text-main); }
+.forward-nav-btn, .primary-btn { flex: 1; background: var(--primary); color: var(--bg-app); }
+.forward-nav-btn:disabled { opacity: .35; cursor: not-allowed; }
 
-.dark-mode-app .brand-heading,
-.dark-mode-app .step-main-title,
-.dark-mode-app .main-page-title,
-.dark-mode-app .article-card-title,
-.dark-mode-app .modal-article-title,
-.dark-mode-app .ai-box-title,
-.dark-mode-app .comments-section-title,
-.dark-mode-app .comment-text-body,
-.dark-mode-app .toggle-text-info strong {
-  color: #FFFFFF !important;
-}
-
-.dark-mode-app .ai-bullet-points,
-.dark-mode-app .ai-bullet-points li,
-.dark-mode-app .ai-bullet-points strong {
-  color: #FFFFFF !important;
-}
-
-.dark-mode-app .original-link-banner strong { color: #FFFFFF !important; }
-.dark-mode-app .original-link-banner small { color: #AEAEB2 !important; }
-
-.dark-mode-app .article-main-card,
-.dark-mode-app .comment-row-item,
-.dark-mode-app .original-link-banner {
-  background-color: #2C2C2E !important;
-  border-color: #3A3A3C !important;
-}
-.dark-mode-app .session-timeline-box,
-.dark-mode-app .ai-summary-container-box {
-  background-color: #2C2C2E !important;
-}
-.dark-mode-app .hour-pill {
-  background-color: #3A3A3C !important;
-  border-color: #48484A !important;
-  color: #AEAEB2 !important;
-}
-.dark-mode-app .hour-pill.current-now {
-  background-color: #FFFFFF !important;
-  color: #1C1C1E !important;
-}
-.dark-mode-app .category-chips button,
-.dark-mode-app .update-status-bar {
-  background-color: #2C2C2E !important;
-  color: #E5E5EA !important;
-}
-.dark-mode-app .category-chips button.active {
-  background-color: #FFFFFF !important;
-  color: #1C1C1E !important;
-}
-
-.dark-mode-app .app-bottom-nav-bar { background-color: #1C1C1E !important; border-top: 1px solid #2C2C2E !important; }
-.dark-mode-app .nav-tab-item { color: #636366; }
-.dark-mode-app .nav-tab-item.is-active { color: #FFFFFF !important; }
-.dark-mode-app .noti-main-text-title { color: #FFFFFF !important; }
-.dark-mode-app .noti-body-headline-title { color: #E5E5EA !important; }
-.dark-mode-app .noti-body-subtext-description { color: #AEAEB2 !important; }
-.dark-mode-app .is-unread-bg { background-color: #2C2C2E !important; }
-
-/* ==========================================================================
-   3. 로그인 및 온보딩 세부 요소 스타일
-   ========================================================================== */
-.step-indicator { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #8E8E93; font-weight: 600; margin-bottom: 16px; text-align: center; }
-.step-progress-bar { width: 100%; height: 4px; background-color: #E5E5EA; border-radius: 2px; overflow: hidden; }
-.progress-fill { height: 100%; background-color: #1C1C1E; transition: width 0.3s ease; }
-.app-brand-icon { margin: 20px 0 16px 0; text-align: center; }
-.brand-heading { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 8px; }
-.brand-description { font-size: 14px; line-height: 1.5; color: #636366; text-align: center; margin-bottom: 30px; }
-.auth-button-group { width: 100%; display: flex; flex-direction: column; gap: 10px; }
-.social-login-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; border: 1px solid #E5E5EA; background-color: #FFFFFF; color: #1C1C1E; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
-.social-login-btn .icon { position: absolute; left: 20px; font-size: 16px; }
-.kakao-btn { background-color: #FEE500 !important; border: none !important; color: #3A1D1D !important; }
-.apple-btn { background-color: #FFFFFF; border: 1px solid #1C1C1E; }
-.terms-notice { font-size: 11px; line-height: 1.5; color: #8E8E93; margin-top: 14px; text-align: center; }
-
-.step-main-title { font-size: 20px; font-weight: 700; color: #1C1C1E; margin: 10px 0 4px 0; text-align: left; }
-.step-sub-title { font-size: 13px; color: #8E8E93; margin: 0 0 20px 0; text-align: left; }
-.selection-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
-.selection-card { width: 100%; padding: 16px 20px; border-radius: 14px; background-color: #FFFFFF; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; cursor: pointer; }
-.selection-card.is-unselected { border: 1px solid #E5E5EA !important; }
-.selection-card.is-selected { border: 2px solid #1C1C1E !important; }
-.card-left { display: flex; align-items: center; gap: 10px; font-size: 14px; }
-.card-left small { color: #8E8E93; margin-left: 5px; }
-
-.category-matrix-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 30px; }
-.matrix-item { background-color: #FFFFFF; border-radius: 14px; padding: 20px 10px; font-size: 20px; cursor: pointer; text-align: center; color: #1C1C1E; box-sizing: border-box; }
-.matrix-item.is-unselected { border: 1px solid #E5E5EA !important; }
-.matrix-item.is-selected { border: 2px solid #1C1C1E !important; }
-.matrix-item span { font-size: 13px; font-weight: 600; display: inline-block; margin-top: 6px; color: inherit; }
-
-.toggle-option-list { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; box-sizing: border-box; }
-.toggle-row-item { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background-color: #FFFFFF; border: 1px solid #E5E5EA; border-radius: 14px; box-sizing: border-box; }
-.toggle-text-info { text-align: left; }
-.toggle-text-info strong { font-size: 14px; color: #1C1C1E; }
-.toggle-text-info small { font-size: 12px; color: #8E8E93; }
-
-.switch-input-label { position: relative; display: inline-block; width: 51px; height: 31px; min-width: 51px; }
+.toggle-option-list { display: grid; gap: 12px; }
+.toggle-row-item { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.toggle-text-info { display: grid; gap: 3px; text-align: left; }
+.switch-input-label { width: 51px; height: 31px; position: relative; flex: 0 0 auto; }
 .switch-input-label input { opacity: 0; width: 0; height: 0; }
-.slider-round { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E5E5EA; transition: .3s; border-radius: 34px; }
-.slider-round:before { position: absolute; content: ""; height: 27px; width: 27px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
-input:checked + .slider-round { background-color: #34C759; }
+.slider-round { position: absolute; inset: 0; background: var(--surface-muted); border-radius: 99px; transition: .2s; }
+.slider-round:before { content: ''; position: absolute; width: 27px; height: 27px; left: 2px; top: 2px; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.18); transition: .2s; }
+input:checked + .slider-round { background: var(--success); }
 input:checked + .slider-round:before { transform: translateX(20px); }
 
-.navigation-actions { width: 100%; display: flex; gap: 10px; }
-.back-nav-btn { flex: 1; padding: 14px; background-color: #F2F2F7; color: #1C1C1E; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
-.forward-nav-btn { flex: 2; padding: 14px; background-color: #1C1C1E; color: #FFFFFF; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
-.forward-nav-btn.is-disabled { background-color: #AEAEB2 !important; cursor: not-allowed !important; }
-.onboarding-finish-btn { width: 100%; padding: 14px; background-color: #1C1C1E; color: #FFFFFF; border: none; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; }
-
-/* ==========================================================================
-   4. 🏠 오늘의 브리핑 메인 홈 요소 구조
-   ========================================================================== */
-.home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; width: 100%; gap: 8px; }
-.logo-section { font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-.country-tabs { display: flex; background: #E5E5EA; padding: 2px; border-radius: 8px; }
-.country-tabs button { border: none; background: transparent; padding: 6px 8px; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 6px; color: #1C1C1E; white-space: nowrap; }
-.country-tabs button.active { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-.header-right-icons { display: flex; align-items: center; gap: 10px; }
-.theme-toggle-icon { background: #F2F2F7; border: none; font-size: 14px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
-.noti-icon-badge { position: relative; font-size: 16px; display: flex; align-items: center; }
-.noti-icon-badge span { position: absolute; top: -4px; right: -4px; background: #FF3B30; color: #fff; font-size: 9px; border-radius: 50%; padding: 1px 4px; font-weight: bold; }
-.user-avatar { width: 26px; height: 26px; background: #E8EAF6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #3F51B5; cursor: pointer; }
-
-.update-status-bar { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #636366; background: #F4F4F0; padding: 10px 12px; border-radius: 10px; margin-bottom: 16px; box-sizing: border-box; }
-.refresh-btn { background: none; border: none; font-size: 11px; color: #007AFF; cursor: pointer; font-weight: 600; }
-.date-heading { font-size: 12px; color: #8E8E93; margin-bottom: 2px; text-align: left; }
-.main-page-title { font-size: 24px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -0.5px; text-align: left; }
-
-.category-chips { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px; }
-.category-chips button { border: none; background: #F2F2F7; padding: 8px 14px; border-radius: 20px; font-size: 13px; color: #1C1C1E; font-weight: 500; cursor: pointer; white-space: nowrap; }
-.category-chips button.active { background: #1C1C1E; color: #fff; }
-
-.session-timeline-box { background: #F4F4F0; border-radius: 16px; padding: 14px; margin-bottom: 20px; box-sizing: border-box; }
-.timeline-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
-.timeline-meta { color: #8E8E93; font-weight: 400; }
+.home-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+.logo-section { font-size: 15px; font-weight: 900; white-space: nowrap; }
+.country-tabs { display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: var(--surface-muted); overflow-x: auto; }
+.country-tabs button { border: 0; background: transparent; color: var(--text-main); border-radius: 8px; padding: 7px 9px; white-space: nowrap; font-size: 12px; font-weight: 800; }
+.country-tabs button.active { background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.header-right-icons { display: flex; align-items: center; gap: 8px; }
+.theme-toggle-icon, .noti-icon-badge, .user-avatar { border: 0; background: var(--surface-muted); color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; position: relative; }
+.noti-badge-num { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px; background: var(--danger); color: #fff; font-size: 10px; display: grid; place-items: center; }
+.update-status-bar, .session-timeline-box, .info-bar { background: var(--surface-soft); border-radius: 16px; padding: 12px 14px; color: var(--text-sub); font-size: 12px; }
+.update-status-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; }
+.refresh-btn { border: 0; background: transparent; color: #007aff; font-size: 12px; font-weight: 800; white-space: nowrap; }
+.date-heading { color: var(--text-muted); font-size: 13px; }
+.main-page-title { font-size: 28px; margin: 2px 0 18px; letter-spacing: -0.7px; }
+.category-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; }
+.category-chips button { border: 0; border-radius: 999px; padding: 9px 14px; background: var(--surface-muted); color: var(--text-main); white-space: nowrap; font-size: 13px; font-weight: 700; }
+.category-chips button.active { background: var(--primary); color: var(--bg-app); }
+.timeline-header, .session-sub-title, .section-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.timeline-header { font-size: 13px; font-weight: 800; margin-bottom: 12px; }
+.timeline-meta, .right-label, .section-title-row span { color: var(--text-muted); font-size: 11px; font-weight: 500; }
 .timeline-hours-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.hour-pill { background: #fff; text-align: center; padding: 6px 2px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #8E8E93; border: 1px solid #E5E5EA; }
-.hour-pill.current-now { background: #1C1C1E; color: #fff; border: none; }
-.hour-pill small { font-size: 9px; font-weight: 400; display: block; margin-top: 1px; }
+.hour-pill { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 7px 2px; text-align: center; color: var(--text-muted); font-size: 11px; font-weight: 800; }
+.hour-pill.current-now { background: var(--primary); color: var(--bg-app); border-color: var(--primary); }
+.hour-pill small { display: block; font-size: 9px; font-weight: 500; margin-top: 2px; }
+.session-sub-title { margin: 18px 0 12px; font-size: 14px; font-weight: 900; }
+.articles-list { display: grid; gap: 12px; }
+.article-main-card { display: flex; gap: 12px; padding: 16px; transition: transform .15s ease, box-shadow .15s ease; text-align: left; }
+.article-main-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.card-rank-num { width: 24px; color: var(--text-muted); font-size: 20px; font-weight: 900; flex: 0 0 auto; }
+.card-body-content { flex: 1; min-width: 0; }
+.card-meta-info { display: flex; gap: 8px; flex-wrap: wrap; color: var(--text-muted); font-size: 11px; margin-bottom: 7px; }
+.cat-badge { background: color-mix(in srgb, var(--accent) 12%, var(--surface-muted)); color: var(--accent); padding: 3px 7px; border-radius: 7px; font-size: 10px; font-weight: 900; }
+.article-card-title { margin: 0 0 9px; color: var(--text-main); font-size: 16px; line-height: 1.4; letter-spacing: -0.3px; }
+.article-bullet-summary { display: grid; gap: 4px; color: var(--text-sub); font-size: 13px; line-height: 1.45; margin-bottom: 12px; }
+.card-bottom-actions { display: flex; gap: 14px; align-items: center; color: var(--text-muted); font-size: 12px; }
+.card-scrap-btn { margin-left: auto; border: 0; background: transparent; color: var(--accent); font-weight: 900; padding: 0; }
+.empty-state { padding: 48px 18px; text-align: center; color: var(--text-muted); border: 1px dashed var(--border); border-radius: 18px; background: var(--surface-soft); }
 
-.session-sub-title { font-size: 13px; font-weight: 700; color: #1C1C1E; margin-bottom: 12px; display: flex; justify-content: space-between; }
-.session-sub-title .right-label { color: #8E8E93; font-weight: 400; font-size: 11px; }
+.app-bottom-nav-bar { position: fixed; left: 0; right: 0; bottom: 0; height: 70px; background: color-mix(in srgb, var(--bg-app) 96%, transparent); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1000; backdrop-filter: blur(16px); }
+.nav-tab-item { flex: 1; height: 100%; border: 0; background: transparent; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+.nav-tab-item.is-active { color: var(--text-main); font-weight: 900; }
+.nav-tab-icon { position: relative; font-size: 18px; }
+.nav-tab-label { font-size: 11px; }
+.nav-mini-badge-dot { position: absolute; top: -2px; right: -5px; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); }
 
-.articles-list { display: flex; flex-direction: column; gap: 12px; }
-.article-main-card { display: flex; background: #fff; border: 1px solid #E5E5EA; border-radius: 16px; padding: 16px; cursor: pointer; transition: transform 0.15s ease; box-sizing: border-box; }
-.card-rank-num { font-size: 18px; font-weight: 800; color: #AEAEB2; width: 24px; text-align: left; }
-.card-body-content { flex: 1; }
-.card-meta-info { display: flex; gap: 8px; font-size: 11px; color: #8E8E93; margin-bottom: 6px; align-items: center; }
-.cat-badge { background: #F2F2F7; color: #5856D6; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
-.article-card-title { font-size: 15px; font-weight: 700; margin: 0 0 8px 0; line-height: 1.4; color: #1C1C1E; letter-spacing: -0.3px; text-align: left; }
-.article-bullet-summary { padding-left: 16px; margin: 0 0 12px 0; font-size: 13px; color: #636366; line-height: 1.5; text-align: left; }
-.article-bullet-summary li { margin-bottom: 3px; }
-.card-bottom-actions { display: flex; gap: 14px; font-size: 11px; color: #8E8E93; align-items: center; position: relative; }
-.card-scrap-btn { position: absolute; right: 0; background: none; border: none; color: #8E8E93; font-size: 11px; cursor: pointer; font-weight: 600; }
-.more-articles-btn { text-align: center; font-size: 12px; color: #8E8E93; padding: 12px; border: 1px dashed #E5E5EA; border-radius: 12px; margin-top: 12px; cursor: pointer; font-weight: 500; }
+.page-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+.back-label { font-weight: 900; color: var(--text-sub); }
+.page-actions { display: flex; gap: 8px; }
+.page-actions button, .primary-chip { border: 0; border-radius: 10px; padding: 8px 11px; background: var(--surface-muted); color: var(--text-main); font-size: 12px; font-weight: 800; }
+.primary-chip, .page-actions .primary-btn { background: var(--primary); color: var(--bg-app); }
+.section-eyebrow { color: var(--text-muted); font-size: 13px; font-weight: 900; display: block; margin-bottom: 10px; }
+.folder-grid { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(145px, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 10px; }
+.folder-card { min-height: 116px; padding: 14px; text-align: left; position: relative; display: grid; align-content: start; gap: 8px; }
+.folder-icon { width: 28px; height: 28px; border-radius: 8px; background: var(--surface-muted); display: grid; place-items: center; }
+.folder-card em { position: absolute; right: 14px; top: 12px; font-style: normal; font-size: 20px; font-weight: 900; }
+.folder-delete { position: absolute; right: 14px; bottom: 12px; font-size: 11px; color: var(--danger); opacity: .72; }
+.scrap-list-section { margin-top: 18px; }
+.more-articles-btn { width: 100%; border: 1px dashed var(--border); background: transparent; color: var(--text-muted); border-radius: 14px; padding: 13px; margin-top: 12px; font-weight: 800; }
 
-/* ==========================================================================
-   5. 💬 AI 상세 요약 팝업 모달
-   ========================================================================== */
-.modal-screen-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; }
-.modal-main-window { width: 100%; max-width: 430px; height: 88vh; background: #fff; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden; }
-.modal-top-bar { display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid #F2F2F7; align-items: center; }
-.modal-back-arrow { background: none; border: none; font-size: 13px; font-weight: 600; color: #636366; cursor: pointer; }
-.modal-top-right-btns { display: flex; gap: 12px; }
-.icon-action-btn { background: none; border: none; font-size: 16px; cursor: pointer; }
-.modal-scroll-area { flex: 1; overflow-y: auto; padding: 20px 16px; }
-.modal-meta-row { display: flex; gap: 6px; font-size: 11px; color: #8E8E93; margin-bottom: 8px; }
-.modal-cat-tag { color: #5856D6; font-weight: bold; }
-.modal-article-title { font-size: 19px; font-weight: 800; margin: 0 0 16px 0; line-height: 1.4; color: #1C1C1E; text-align: left; }
-.original-link-banner { width: 100%; text-align: left; background: #FAFAFA; border: 1px solid #E5E5EA; padding: 12px 14px; border-radius: 14px; margin-bottom: 20px; position: relative; cursor: pointer; }
-.naver-icon { background: #03C75A; color: #fff; padding: 2px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 4px; }
-.ai-summary-container-box { background: #F4F4F0; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-sizing: border-box; }
-.ai-box-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; color: #1C1C1E; }
-.ai-speed-tag { font-size: 11px; color: #8E8E93; font-weight: 400; }
-.ai-bullet-points { padding-left: 18px; margin: 0; font-size: 13px; color: #3A3A3C; line-height: 1.6; text-align: left; }
-.ai-bullet-points li { margin-bottom: 8px; }
-.modal-bottom-notice-bar { background: #F2F2F7; padding: 10px 16px; display: flex; justify-content: space-between; font-size: 10px; color: #8E8E93; border-top: 1px solid #E5E5EA; }
-
-.comments-section-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-.comments-title-left { font-size: 14px; font-weight: 700; color: #1C1C1E; }
-.comments-filter-toggle-buttons { display: flex; gap: 8px; font-size: 12px; font-weight: 600; }
-.filter-chip-active { color: #1C1C1E; background-color: #F2F2F7; padding: 3px 8px; border-radius: 20px; }
-.filter-chip-inactive { color: #AEAEB2; padding: 3px 4px; cursor: pointer; }
-.comment-row-item { background: #F9F9FA; padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #E5E5EA !important; box-sizing: border-box; text-align: left; }
-.comment-user-meta-row { display: flex; justify-content: space-between; font-size: 12px; color: #636366; margin-bottom: 6px; }
-.like-badge-right { font-size: 11px; color: #8E8E93; font-weight: 500; }
-.comment-text-body { font-size: 13px; margin: 0 0 4px 0; color: #2C2C2E; line-height: 1.5; }
-.comment-time-left-sub { font-size: 11px; color: #AEAEB2; text-align: left; margin-top: 2px; }
-.more-comments-dashed-btn { width: 100%; text-align: center; border: 1px dashed #E5E5EA; border-radius: 12px; padding: 12px; font-size: 12px; color: #8E8E93; font-weight: 600; cursor: pointer; margin-top: 14px; margin-bottom: 20px; box-sizing: border-box; }
-
-/* ==========================================================================
-   6. 🔔 알림 센터 디자인 규격 일체화
-   ========================================================================== */
-.noti-page-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.noti-page-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .noti-title-left-side { display: flex; align-items: center; gap: 8px; }
-.noti-main-text-title { font-size: 26px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.5px; }
-.noti-count-badge-pink { background-color: #FEECEB; color: #EB5757; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 12px; }
-.noti-clear-all-btn { background: none; border: none; font-size: 14px; color: #8E8E93; font-weight: 500; cursor: pointer; }
-.noti-list-scroll-box { display: flex; flex-direction: column; }
-.noti-date-divider-title { font-size: 13px; font-weight: 700; color: #8E8E93; text-align: left; margin: 8px 0 14px 0; }
-.noti-list-card-item { display: flex; align-items: flex-start; gap: 14px; padding: 12px 4px; border-radius: 14px; transition: background-color 0.15s ease; margin-bottom: 4px; box-sizing: border-box; }
+.noti-main-text-title { font-size: 28px; font-weight: 900; }
+.noti-count-badge-pink { background: #feeceb; color: #eb5757; font-size: 12px; font-weight: 900; padding: 5px 10px; border-radius: 999px; }
+.noti-clear-all-btn { border: 0; background: transparent; color: var(--text-muted); font-weight: 800; }
+.noti-date-divider-title { color: var(--text-muted); font-size: 13px; font-weight: 900; margin: 12px 0 8px; }
+.noti-list-card-item { width: 100%; border: 0; background: transparent; color: var(--text-main); display: flex; align-items: flex-start; gap: 12px; padding: 13px 4px; border-radius: 16px; text-align: left; }
+.noti-list-card-item.is-unread-bg { background: color-mix(in srgb, #2f80ed 9%, var(--surface)); padding: 13px; }
+.noti-avatar-circle-icon { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; }
+.noti-blue-circle { background: #d6e4ff; } .noti-pink-circle { background: #fce7e6; } .noti-brown-circle { background: #f9eedd; } .noti-gray-circle { background: var(--surface-muted); }
+.noti-body-content-info { display: grid; gap: 4px; flex: 1; }
+.noti-body-headline-title { font-size: 14px; }
+.noti-body-subtext-description { color: var(--text-sub); font-size: 13px; line-height: 1.4; }
+.noti-right-time-text { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
 
-.noti-list-card-item.is-unread-bg { 
-  background-color: #EBF3FC; 
-  padding: 12px 14px; 
-  margin-left: -14px; 
-  margin-right: -14px; 
+.settings-grid { display: grid; gap: 14px; }
+.profile-card, .settings-card { padding: 16px; }
+.profile-card { display: flex; align-items: center; gap: 14px; }
+.profile-avatar { width: 56px; height: 56px; border-radius: 50%; background: #e8eaf6; color: #3f51b5; display: grid; place-items: center; font-size: 20px; font-weight: 900; }
+.profile-card div:last-child { display: grid; gap: 4px; }
+.settings-card h3 { margin: 0 0 4px; font-size: 15px; }
+.theme-segment { display: flex; background: var(--surface-muted); padding: 3px; border-radius: 10px; }
+.theme-segment button { border: 0; background: transparent; color: var(--text-main); padding: 7px 12px; border-radius: 8px; font-weight: 800; }
+.theme-segment button.active { background: var(--surface); }
+.chip-section { margin-top: 12px; display: grid; gap: 7px; }
+.chip-section > span { color: var(--text-muted); font-size: 12px; font-weight: 900; }
+.chip-wrap { display: flex; gap: 7px; flex-wrap: wrap; }
+.sub-chip, .ticker-chip { border: 0; border-radius: 999px; padding: 7px 11px; background: var(--surface-muted); color: var(--text-main); font-size: 12px; font-weight: 800; }
+.sub-chip.active { background: var(--accent); color: #fff; }
+.sub-chip:disabled { opacity: 1; cursor: default; }
+.ticker-form { display: flex; gap: 8px; margin: 12px 0; }
+.ticker-form input { min-width: 0; flex: 1; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-main); border-radius: 10px; padding: 10px 12px; }
+.ticker-form button { border: 0; background: var(--primary); color: var(--bg-app); border-radius: 10px; padding: 0 14px; font-weight: 900; }
+.ticker-chip { background: #e4f6ed; color: #107c41; }
+.danger-zone { border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+.danger-zone button { width: 100%; border: 0; background: var(--surface); color: var(--text-main); padding: 15px 16px; display: flex; justify-content: space-between; }
+.danger-zone .danger { color: var(--danger); border-top: 1px solid var(--border); }
+
+.modal-screen-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.48); display: flex; align-items: flex-end; justify-content: center; z-index: 99999; }
+.modal-main-window { width: min(100%, var(--mobile-max)); max-height: 88svh; background: var(--bg-app); color: var(--text-main); border-radius: 24px 24px 0 0; overflow: hidden; display: flex; flex-direction: column; }
+.modal-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); }
+.modal-back-arrow, .modal-top-right-btns button { border: 0; background: transparent; color: var(--text-sub); font-weight: 900; }
+.modal-scroll-area { overflow-y: auto; padding: 18px 16px 24px; }
+.modal-loading { color: var(--accent); font-size: 12px; font-weight: 900; margin-bottom: 10px; }
+.modal-meta-row { display: flex; gap: 8px; color: var(--text-muted); font-size: 12px; margin-bottom: 8px; }
+.modal-cat-tag { color: var(--accent); font-weight: 900; }
+.modal-article-title { margin: 0 0 16px; font-size: 22px; line-height: 1.35; letter-spacing: -0.6px; }
+.original-link-banner { width: 100%; padding: 14px; margin-bottom: 16px; text-align: left; display: grid; gap: 4px; }
+.naver-icon { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: #03c75a; color: #fff; font-size: 12px; font-weight: 900; margin-right: 4px; }
+.original-link-banner small { color: var(--text-muted); }
+.ai-summary-container-box { background: var(--surface-soft); border-radius: 18px; padding: 16px; }
+.ai-box-title { font-weight: 900; margin-bottom: 10px; }
+.ai-speed-tag { float: right; color: var(--text-muted); font-size: 11px; font-weight: 600; }
+.ai-bullet-points { margin: 0; padding-left: 18px; color: var(--text-sub); font-size: 14px; line-height: 1.6; }
+.comments-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.comments-section-title-row { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 12px; margin-bottom: 12px; }
+.comments-section-title-row strong { color: var(--text-main); font-size: 15px; }
+.comment-row-item { padding: 12px 14px; margin-bottom: 8px; }
+.comment-user-meta-row { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 12px; margin-bottom: 5px; }
+.comment-user-meta-row strong { color: var(--accent); }
+.comment-text-body { margin: 0; color: var(--text-sub); font-size: 13px; line-height: 1.5; }
+.more-comments-dashed-btn { width: 100%; border: 1px dashed var(--border); background: transparent; color: var(--text-muted); border-radius: 14px; padding: 12px; margin-top: 8px; font-weight: 900; }
+.modal-bottom-notice-bar { display: flex; justify-content: space-between; gap: 10px; padding: 11px 16px; background: var(--surface-muted); color: var(--text-muted); font-size: 10px; }
+
+
+/* ======================================================================
+   Responsive layout lock
+   - 0 ~ 1023px: mobile app frame only
+   - 1024px 이상: desktop web dashboard only
+   ====================================================================== */
+@media (max-width: 480px) {
+  body {
+    padding: 0;
+    display: block;
+  }
+  .app-global-layout {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 100svh;
+    min-height: 100svh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .app-bottom-nav-bar {
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: none;
+    border-radius: 0;
+  }
 }
 
-.noti-avatar-circle-icon { width: 38px; height: 38px; min-width: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.noti-blue-circle { background-color: #D6E4FF; color: #2F80ED; }
-.noti-pink-circle { background-color: #FCE7E6; color: #EB5757; }
-.noti-brown-circle { background-color: #F9EEDD; color: #D58F30; }
-.noti-gray-circle { background-color: #F2F2F7; color: #8E8E93; }
-.noti-body-content-info { flex: 1; text-align: left; }
-.noti-body-headline-title { font-size: 14.5px; font-weight: 700; color: #1C1C1E; margin-bottom: 3px; letter-spacing: -0.2px; }
-.noti-body-subtext-description { font-size: 13px; color: #48484A; line-height: 1.4; }
-.noti-right-time-text { font-size: 12px; color: #AEAEB2; white-space: nowrap; margin-top: 2px; }
-
-/* ==========================================================================
-   7. 하단 고정 탭 바 내비게이션 바
-   ========================================================================== */
-.app-bottom-nav-bar {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 64px;
-  background-color: #FFFFFF;
-  border-top: 1px solid #F2F2F7;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 1000;
-  box-sizing: border-box;
-  padding-bottom: 6px;
+@media (min-width: 481px) and (max-width: 1023px) {
+  .app-bottom-nav-bar {
+    left: 50%;
+    right: auto;
+    width: var(--mobile-max);
+    transform: translateX(-50%);
+    border-radius: 0 0 28px 28px;
+  }
 }
-.nav-tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; height: 100%; cursor: pointer; color: #8E8E93; }
-.nav-tab-icon { font-size: 18px; margin-bottom: 2px; }
-.nav-tab-label { font-size: 11px; font-weight: 500; }
-.nav-tab-item.is-active { color: #1C1C1E; }
-.nav-tab-item.is-active .nav-tab-label { font-weight: 700; }
-.nav-mini-badge-dot { position: absolute; top: -1px; right: -1px; width: 5px; height: 5px; background-color: #FF3B30; border-radius: 50%; }
-/* ==========================================
-   🖥️ 데스크탑 고정형 레이아웃: 전 화면 '1100px' 절대 고정 (1024px 이상 전용)
-   ========================================== */
+
 @media (min-width: 1024px) {
-  
-  /* 1. 최외곽 배경 레이아웃: 화면 중앙 정렬 */
-  html body div.app-global-layout {
+  body {
+    padding: 0;
+    display: block;
+    background: var(--bg-outer);
+  }
+
+  .app-global-layout {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: auto;
+    min-height: 100vh;
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .app-main-content-area {
+    width: min(var(--desktop-max), calc(100% - 48px));
+    max-width: var(--desktop-max);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 112px 0 72px;
+    overflow: visible;
+  }
+
+  .home-container {
+    width: 100%;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .app-bottom-nav-bar {
+    display: none !important;
+  }
+
+  .desktop-top-nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(var(--desktop-max), calc(100% - 48px));
+    z-index: 900;
+    background: color-mix(in srgb, var(--bg-app) 94%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.06);
+    backdrop-filter: blur(18px);
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .desktop-top-nav[aria-hidden='true'] {
+    display: none;
+  }
+
+  .desktop-top-nav button {
+    border: 0;
+    background: transparent;
+    color: var(--text-sub);
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-weight: 900;
+  }
+
+  .desktop-top-nav button.active {
+    background: var(--primary);
+    color: var(--bg-app);
+  }
+
+  .onboarding-center,
+  .step-container {
+    width: min(860px, 100%);
+    min-height: calc(100vh - 184px);
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  .home-header,
+  .update-status-bar,
+  .session-timeline-box,
+  .page-header-row,
+  .noti-page-header-row,
+  .profile-card,
+  .settings-card,
+  .article-main-card {
+    box-shadow: 0 8px 26px rgba(0,0,0,.035);
+  }
+
+  .home-header {
+    background: var(--bg-app);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 18px 22px;
+  }
+
+  .country-tabs button {
+    font-size: 14px;
+    padding: 9px 14px;
+  }
+
+  .main-page-title {
+    font-size: 36px;
+  }
+
+  .selection-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .category-matrix-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .articles-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .article-main-card {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .article-card-title {
+    font-size: 18px;
+  }
+
+  .folder-grid {
+    grid-auto-flow: unset;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .profile-card,
+  .danger-zone {
+    grid-column: 1 / -1;
+  }
+
+  .noti-page {
+    width: min(820px, 100%);
+    margin: 0 auto;
+  }
+
+  .modal-screen-overlay {
+    align-items: center;
+    padding: 40px;
+  }
+
+  .modal-main-window {
+    width: min(860px, 100%);
+    max-height: 86vh;
+    border-radius: 28px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .articles-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ======================================================================
+   v3 Layout Stability Patch
+   목적
+   1) 온보딩 STEP 1~4의 앱 프레임/본문 규격 완전 고정
+   2) 로그인 이후 홈/스크랩/알림/마이페이지의 본문 폭·패딩·스크롤 규칙 통일
+   3) 홈 헤더의 다크모드/알림 아이콘 중심 정렬 보정
+   ====================================================================== */
+
+/* 공통: 앱 내부 높이와 스크롤 기준을 한 군데로 통일 */
+.app-global-layout {
+  isolation: isolate;
+}
+
+.app-main-content-area {
+  height: 100%;
+  padding-bottom: 0 !important;
+}
+
+.home-container {
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* 온보딩은 하단 탭바가 없으므로 모든 STEP이 같은 내부 규격을 사용 */
+.app-global-layout.is-onboarding .home-container {
+  min-height: 100%;
+  padding: 24px 20px !important;
+}
+
+.app-global-layout.is-onboarding .onboarding-center,
+.app-global-layout.is-onboarding .step-container {
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+.app-global-layout.is-onboarding .onboarding-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.app-global-layout.is-onboarding .step-container {
+  justify-content: flex-start;
+}
+
+/* step 2~4 상단/하단 간격 통일 */
+.step-container .step-progress-bar {
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+}
+
+.step-container .step-indicator {
+  margin: 2px 0 0;
+}
+
+.step-container .step-main-title {
+  margin-top: 4px;
+}
+
+.step-container .navigation-actions {
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+/* 로그인 이후 모든 페이지는 같은 상하좌우 패딩과 탭바 여백 사용 */
+.app-global-layout.is-authenticated .home-container {
+  padding: 20px 16px 96px !important;
+}
+
+.scrap-page,
+.noti-page,
+.settings-page {
+  min-height: 100%;
+}
+
+/* 홈 헤더: 창 크기에 따라 아이콘이 밀리지 않도록 3컬럼 고정 */
+.home-header {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 8px;
+  width: 100%;
+}
+
+.logo-section {
+  min-width: 0;
+}
+
+.country-tabs {
+  justify-self: center;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.header-right-icons {
+  justify-self: end;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: max-content;
+}
+
+.theme-toggle-icon,
+.noti-icon-badge,
+.user-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 15px !important;
+  text-align: center;
+  vertical-align: middle;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.noti-icon-badge {
+  overflow: visible;
+}
+
+.noti-badge-num {
+  top: -5px !important;
+  right: -5px !important;
+}
+
+/* 모바일 실기기: 전체 화면을 쓰되 페이지마다 프레임이 흔들리지 않도록 고정 */
+@media (max-width: 480px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    min-height: 100%;
+  }
+
+  .app-global-layout {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100svh !important;
+    min-height: 100svh !important;
+  }
+
+  .home-header {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .country-tabs button {
+    padding-inline: 7px;
+  }
+}
+
+/* 태블릿/작은 창: 데스크탑으로 바꾸지 않고 430px 앱 프레임으로 고정 */
+@media (min-width: 481px) and (max-width: 1023px) {
+  body {
+    min-height: 100svh;
+  }
+
+  .app-global-layout {
+    width: var(--mobile-max) !important;
+    min-width: var(--mobile-max) !important;
+    max-width: var(--mobile-max) !important;
+    height: min(860px, calc(100svh - 40px)) !important;
+    min-height: min(860px, calc(100svh - 40px)) !important;
+  }
+
+  .app-bottom-nav-bar {
+    left: 50% !important;
+    right: auto !important;
+    width: var(--mobile-max) !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* 데스크탑: 모든 페이지를 같은 1180px 컨테이너 규격으로 통일 */
+@media (min-width: 1024px) {
+  .app-main-content-area {
+    width: min(var(--desktop-max), calc(100% - 48px)) !important;
+    max-width: var(--desktop-max) !important;
+    margin: 0 auto !important;
+    padding: 112px 0 72px !important;
+  }
+
+  .app-global-layout.is-onboarding .app-main-content-area {
+    padding: 72px 0 !important;
+  }
+
+  .app-global-layout.is-onboarding .home-container,
+  .app-global-layout.is-authenticated .home-container,
+  .home-container,
+  .scrap-page,
+  .noti-page,
+  .settings-page {
     width: 100% !important;
     max-width: 100% !important;
-    min-height: 100vh !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background-color: #F8F9FA !important; /* 배경은 은은한 회색 */
-    display: flex !important;
-    justify-content: center !important; 
+    margin: 0 auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
-  html body.dark-body div.app-global-layout {
-    background-color: #121212 !important;
+  .app-global-layout.is-onboarding .onboarding-center,
+  .app-global-layout.is-onboarding .step-container {
+    width: min(860px, 100%) !important;
+    max-width: 860px !important;
+    margin: 0 auto !important;
+    min-height: calc(100vh - 144px) !important;
   }
 
-  /* 2. 🌟 메인 본문 영역: 로그인 / 온보딩 / 뉴스 피드 상관없이 무조건 1100px 한 크기로 절대 고정! */
-  html body div.app-global-layout div.app-main-content-area {
-    width: 1100px !important;     /* 👈 퍼센트(%)가 아니라 1100px 고정값으로 강제 고정 */
-    max-width: 1100px !important; 
-    height: auto !important;     
-    min-height: 100vh !important;
-    border: none !important;     
-    border-radius: 0 !important; 
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05) !important; 
-    background-color: #FFFFFF !important; /* 본문 영역은 화이트 */
-    padding: 60px 80px 180px 80px !important; /* 내부 여백 통일 */
-    box-sizing: border-box !important;
-    overflow: visible !important;
-    margin: 0 auto !important; 
-    left: auto !important;
-    transform: none !important;
+  .app-global-layout.is-authenticated .home-container {
+    min-height: calc(100vh - 184px);
   }
 
-  html body.dark-body div.app-main-content-area {
-    background-color: #1C1C1E !important;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4) !important;
-  }
-
-  /* 3. 🔑 로그인 창 / 온보딩 내부 요소들: 부모 크기(1100px)를 그대로 따라가도록 100% 채우기 */
-  div.app-main-content-area div.home-container {
+  .noti-page {
     width: 100% !important;
-    max-width: 100% !important; /* 👈 들쭉날쭉하지 않게 부모 너비인 1100px을 다 씁니다 */
-    margin: 40px auto !important;
-    text-align: center;
+    max-width: 100% !important;
   }
 
-  /* 소셜 로그인 버튼 집합: 버튼들이 너무 좌우로 찢어지면 보기 흉하니 버튼 박스만 중앙에 모아줌 */
-  div.home-container div.auth-button-group {
-    max-width: 420px !important; 
-    width: 100% !important;
-    margin: 40px auto 0 auto !important;
+  .home-header {
+    grid-template-columns: auto minmax(360px, 1fr) auto;
+    min-height: 72px;
   }
 
-  div.home-container div.auth-button-group button.social-login-btn {
-    width: 100% !important;
-    height: 55px !important;
+  .header-right-icons {
+    gap: 10px;
+  }
+
+  .theme-toggle-icon,
+  .noti-icon-badge,
+  .user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
     font-size: 16px !important;
   }
 
-  /* 4. 🏠 오늘의 브리핑 뉴스 기사 목록: 고정된 1100px 안에서 균등하게 2열로 분할 */
-  div.app-main-content-area div.articles-list {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; 
-    gap: 32px !important; 
-    width: 100% !important;
-    margin: 0 auto !important;
+  .noti-badge-num {
+    top: -6px !important;
+    right: -6px !important;
   }
 
-  /* 5. 온보딩 STEP 2 국가 선택 리스트 가로 3열 배치 */
-  div.app-main-content-area div.selection-list {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 24px !important;
-    width: 100% !important;
-    margin: 40px auto 0 auto !important;
-  }
-
-  /* 6. 온보딩 STEP 3 관심 분야 매트릭스 가로 3열 배치 */
-  div.app-main-content-area div.category-matrix-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 20px !important;
-    width: 100% !important;
-  }
-
-  /* 7. 하단 내비게이션 바: 고정된 본문 너비(1100px)와 완벽하게 일치하게 고정 */
-  html body div.app-global-layout div.app-bottom-nav-bar {
-    position: fixed !important;
-    width: 1100px !important;    /* 👈 하단바 너비도 가변 없이 1100px 딱 고정 */
-    max-width: 1100px !important; 
-    left: 50% !important;        
-    transform: translateX(-50%) !important;
-    bottom: 0 !important;
-    height: 75px !important;
-    border-radius: 0 !important;
-    z-index: 9999 !important; 
+  .page-header-row,
+  .noti-page-header-row {
+    min-height: 56px;
   }
 }
 
-/* ==========================================
-   📱 모바일 버전 환경 (1023px 이하 완전 보존)
-   ========================================== */
-@media (max-width: 1023px) {
-  .app-global-layout { width: 100%; min-height: 100vh; }
-  .app-main-content-area { width: 100%; min-height: 100vh; }
-  .selection-list { display: flex !important; flex-direction: column !important; gap: 12px; }
+/* ======================================================================
+   v4 Absolute Layout Consistency Patch
+   목적
+   - 데스크탑에서 홈/스크랩/알림/마이페이지가 같은 컨테이너 규격을 사용
+   - 알림 화면이 내용 폭만큼 작아지는 현상 방지
+   - 온보딩 STEP 1~4의 내부 박스 폭/높이 통일
+   - 홈 우측 아이콘 이모지 중심 정렬 보정
+   ====================================================================== */
+
+/* 모든 인증 후 화면의 메인 영역은 같은 폭과 시작 위치를 사용 */
+@media (min-width: 1024px) {
+  .app-global-layout.is-authenticated .app-main-content-area {
+    width: min(var(--desktop-max), calc(100vw - 48px)) !important;
+    max-width: var(--desktop-max) !important;
+    margin: 0 auto !important;
+    padding: 112px 0 80px !important;
+    display: block !important;
+  }
+
+  .app-global-layout.is-authenticated .home-container,
+  .app-global-layout.view-home .home-container,
+  .app-global-layout.view-scrap .scrap-page,
+  .app-global-layout.view-notification .noti-page,
+  .app-global-layout.view-setting .settings-page {
+    width: 100% !important;
+    max-width: var(--desktop-max) !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    align-self: stretch !important;
+  }
+
+  /* 홈 외 화면도 홈과 같은 큰 카드/섹션 규격으로 보이게 함 */
+  .app-global-layout.view-notification .noti-page,
+  .app-global-layout.view-scrap .scrap-page,
+  .app-global-layout.view-setting .settings-page {
+    background: var(--bg-app);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, .035);
+    padding: 28px !important;
+  }
+
+  /* 알림 페이지가 300px 정도로 수축되는 현상 강제 차단 */
+  .app-global-layout.view-notification .noti-page {
+    display: block !important;
+  }
+
+  .app-global-layout.view-notification .noti-page-header-row,
+  .app-global-layout.view-notification .noti-list-scroll-box,
+  .app-global-layout.view-notification .noti-list-card-item {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .app-global-layout.view-notification .noti-list-scroll-box {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 8px !important;
+  }
+
+  .app-global-layout.view-notification .noti-list-card-item {
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    column-gap: 14px !important;
+    padding: 16px 18px !important;
+    border: 1px solid var(--border) !important;
+    background: var(--surface) !important;
+    border-radius: 18px !important;
+  }
+
+  .app-global-layout.view-notification .noti-list-card-item.is-unread-bg {
+    background: color-mix(in srgb, #2f80ed 10%, var(--surface)) !important;
+  }
+
+  .app-global-layout.view-notification .noti-body-content-info {
+    min-width: 0 !important;
+  }
+
+  .app-global-layout.view-notification .noti-body-headline-title,
+  .app-global-layout.view-notification .noti-body-subtext-description {
+    display: block !important;
+    white-space: normal !important;
+  }
+
+  .app-global-layout.view-notification .noti-main-text-title,
+  .app-global-layout.view-scrap .main-page-title,
+  .app-global-layout.view-setting .main-page-title {
+    font-size: 32px !important;
+    letter-spacing: -0.7px !important;
+  }
+
+  /* 스크랩/마이페이지도 홈처럼 넓게 보이도록 카드 그리드 확정 */
+  .app-global-layout.view-scrap .folder-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-auto-flow: unset !important;
+    overflow: visible !important;
+  }
+
+  .app-global-layout.view-scrap .scrap-list,
+  .app-global-layout.view-scrap .articles-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+  }
+
+  .app-global-layout.view-setting .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+  }
+
+  .app-global-layout.view-setting .profile-card,
+  .app-global-layout.view-setting .danger-zone {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* 온보딩 STEP 1~4는 같은 카드 폭, 같은 높이감을 사용 */
+.app-global-layout.is-onboarding .app-main-content-area {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+}
+
+.app-global-layout.is-onboarding .home-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100% !important;
+}
+
+.app-global-layout.is-onboarding .onboarding-center,
+.app-global-layout.is-onboarding .step-container {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+@media (min-width: 481px) and (max-width: 1023px) {
+  .app-global-layout.is-onboarding .home-container,
+  .app-global-layout.is-authenticated .home-container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-global-layout.is-onboarding .app-main-content-area {
+    width: min(860px, calc(100vw - 48px)) !important;
+    max-width: 860px !important;
+    min-height: 100vh !important;
+    margin: 0 auto !important;
+    padding: 72px 0 !important;
+  }
+
+  .app-global-layout.is-onboarding .home-container {
+    background: var(--bg-app);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, .035);
+    padding: 34px !important;
+  }
+
+  .app-global-layout.is-onboarding .onboarding-center,
+  .app-global-layout.is-onboarding .step-container {
+    min-height: calc(100vh - 144px) !important;
+  }
+}
+
+/* 홈 우측 다크모드/알림/프로필 이모지 중심 정렬 */
+.header-right-icons {
+  line-height: 1 !important;
+}
+
+.theme-toggle-icon,
+.noti-icon-badge,
+.user-avatar {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Segoe UI', sans-serif !important;
+  line-height: 1 !important;
+  overflow: visible !important;
+  flex: 0 0 auto !important;
+}
+
+.theme-toggle-icon,
+.noti-icon-badge {
+  transform: translateY(0) !important;
+}
+
+.theme-toggle-icon > *,
+.noti-icon-badge > *:not(.noti-badge-num),
+.user-avatar > * {
+  line-height: 1 !important;
+}
+
+.noti-badge-num {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 18px !important;
+  text-align: center !important;
+}
+
+/* 작은 데스크탑에서도 네비게이션과 본문 폭 일치 */
+@media (min-width: 1024px) {
+  .desktop-top-nav {
+    width: min(var(--desktop-max), calc(100vw - 48px)) !important;
+    max-width: var(--desktop-max) !important;
+  }
 }

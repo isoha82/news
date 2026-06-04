@@ -1,6 +1,16 @@
+### 로그아웃
 POST http://localhost:4000/api/auth/logout
 Content-Type: application/json
 
 {
   "user_id": "46be4c52-b4ee-4f5c-8b55-375fb55bbad6"
+}
+
+### 회원정보 수정
+PUT http://localhost:4000/api/users/46be4c52-b4ee-4f5c-8b55-375fb55bbad6
+Content-Type: application/json
+
+{
+  "name": "수정된이름",
+  "avatar_url": "https://example.com/avatar.png"
 }

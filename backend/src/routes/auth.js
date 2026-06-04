@@ -94,6 +94,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 });
+
 // 로그아웃
 router.post('/logout', async (req, res) => {
   try {

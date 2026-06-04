@@ -37,7 +37,11 @@ app.use('/api/v1/scraps', scrapRouter);
 
 app.use('/api/v1/notifications', notificationRouter);
 
+// 이메일/비번 인증 트랙 (별도 /api/auth + /api/users)
 const localAuthRouter = require('./routes/auth');
 app.use('/api/auth', localAuthRouter);
+
+const localUserRouter = require('./routes/user');
+app.use('/api/users', localUserRouter);
 
 module.exports = app;

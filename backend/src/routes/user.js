@@ -19,10 +19,10 @@ router.put('/:id', requireAuth, async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE users
-       SET name = $1, avatar_url = $2
+       SET name = $1, avatar_url = COALESCE($2, avatar_url)
        WHERE id = $3
        RETURNING id, name, email, avatar_url`,
-      [name, avatar_url, id]
+      [name, avatar_url ?? null, id]
     );
 
     if (result.rows.length === 0) {

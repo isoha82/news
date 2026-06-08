@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../db/index');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { requireAuth } = require('../middlewares/auth');
 
 // 회원가입
 router.post('/signup', async (req, res) => {
@@ -94,15 +95,11 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 로그아웃
-router.post('/logout', async (req, res) => {
+// 로그아웃 (JWT 인증 필요)
+router.post('/logout', requireAuth, async (req, res) => {
   try {
-    const { user_id } = req.body;
-
-    if (!user_id) {
-      return res.status(400).json({ message: '유저 정보가 없습니다.' });
-    }
-
+    // req.user는 JWT 미들웨어에서 설정됨
+    // 추후 refresh token 블랙리스트 처리 시 req.user.id 활용
     res.status(200).json({ message: '로그아웃 성공!' });
 
   } catch (err) {
